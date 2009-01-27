@@ -1,73 +1,43 @@
-SS Friendly 404 - Suggests relevant weblog entries on a 404 page
+Twittee - Show data from Twitter API in ExpressionEngine templates
 ===========================================================================
 
 **Author**: [George Ornbo]
-**Github Repository**: <http://github.com/shapeshed/ss.friendly_404.ee_addon/>
+**Github Repository**: <http://github.com/shapeshed/ss.twittee.ee_addon/>
 
 Installation
 -----
 
-This file pi.ss_human_filesize.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
+This file pi.ss_twittee.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
 
 Name
 ------------------
 
-SS Friendly 404
+SS Twittee
 
 Synopsis
 -------
 
-Returns suggestions of weblog entries on a 404 page.
+Show data from Twitter API in ExpressionEngine templates
 
 Description
 -------
 
-The plugin attempts to match entries to the last segment of the 404 URL helping users to find pages that match what they were looking for.
-
-Add the following to your 404 template
-
-	{exp:ss_friendly_404}
-		{if count == 1}<ul>{/if}
-			<li><a href="{auto_path}">{title}</a></li>
-		{if count == total_results}</ul>{/if}
-	{/exp:ss_friendly_404}
-
-If no match is found nothing will be shown
+To be done..
 
 Parameters
 -------
 
-The following parameters are available:
-
-limit - limits the number of entries returned (default: 5)
-
-	{exp:ss_friendly_404 limit="10"} 
-	
-weblog - limits entries to weblogs defined by their short name (default: show all weblogs)
-
-	{exp:ss_friendly_404 weblog="news|jobs"} 
+To be done..
 	
 Single Variables
 -------
 
-	{title}
-	{auto_path}
-	{url_title}
-	{count}
-	{total_results}
-	{weblog_id}
-	{search_results_url}
+To be done..
 	
 Examples
 -------
 
-	{exp:ss_friendly_404 limit="10"}
-	
-Only 10 results will be returned
-
-	{exp:ss_friendly_404 weblog="news|services"}
-	
-Only results from the news and services weblogs will be returned	
+To be done..	
 	
 Compatibility
 -------
@@ -77,12 +47,12 @@ ExpressionEngine Version 1.6.x
 See also
 -------
 
-http://expressionengine.com/forums/viewthread/92908/
+To be done
 	
 License
 -------
 
-SS Friendly 404 is licensed under a [Creative Commons Attribution-Share Alike 3.0 Unported][] license.
+SS Twittee is licensed under a [Creative Commons Attribution-Share Alike 3.0 Unported][] license.
 
 You are free to:
 

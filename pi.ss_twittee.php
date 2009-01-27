@@ -28,6 +28,59 @@ $plugin_info = array(
 class Ss_twittee{
 
 	/**
+	* Settings for class
+	* @var array
+	*/
+
+	var $username = "";
+	var $password = "";
+	var $format = "xml";
+
+    const API_URL             = 'http://twitter.com';
+
+    // API URLs
+    const PATH_STATUS_PUBLIC  = '/statuses/public_timeline';
+    const PATH_STATUS_FRIENDS = '/statuses/friends_timeline';
+    const PATH_STATUS_USER    = '/statuses/user_timeline';
+    const PATH_STATUS_SHOW    = '/statuses/show';
+    const PATH_STATUS_UPDATE  = '/statuses/update';
+    const PATH_STATUS_REPLIES = '/statuses/replies';
+    const PATH_STATUS_DESTROY = '/statuses/destroy';
+
+    const PATH_USER_FRIENDS   = '/statuses/friends';
+    const PATH_USER_FOLLOWERS = '/statuses/followers';
+    const PATH_USER_FEATURED  = '/statuses/featured';
+    const PATH_USER_SHOW      = '/users/show';
+
+    const PATH_DM_MESSAGES    = '/direct_messages';
+    const PATH_DM_SENT        = '/direct_messages/sent';
+    const PATH_DM_NEW         = '/direct_messages/new';
+    const PATH_DM_DESTROY     = '/direct_messages/destroy';
+
+    const PATH_FRIEND_CREATE  = '/friendships/create';
+    const PATH_FRIEND_DESTROY = '/friendships/destroy';
+    const PATH_FRIEND_EXISTS  = '/friendships/exists';
+
+    const PATH_ACCT_VERIFY    = '/account/verify_credentials';
+    const PATH_ACCT_END_SESS  = '/account/end_session';
+    const PATH_ACCT_ARCHIVE   = '/account/archive';
+    const PATH_ACCT_LOCATION  = '/account/update_location';
+    const PATH_ACCT_DEVICE    = '/account/update_delivery_device';
+
+    const PATH_FAV_FAVORITES  = '/favorites';
+    const PATH_FAV_CREATE     = '/favorites/create';
+    const PATH_FAV_DESTROY    = '/favorites/destroy';
+
+    const PATH_NOTIF_FOLLOW   = '/notifications/follow';
+    const PATH_NOTIF_LEAVE    = '/notifications/leave';
+
+    const PATH_BLOCK_CREATE   = '/blocks/create';
+    const PATH_BLOCK_DESTROY  = '/blocks/destroy';
+
+    const PATH_HELP_TEST      = '/help/test';
+    const PATH_HELP_DOWNTIME  = '/help/downtime_schedule';
+
+	/**
 	* Returned string
 	* @var array
 	*/
@@ -36,69 +89,84 @@ class Ss_twittee{
 
 	function public_timeline() 
 	{
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http://twitter.com/statuses/public_timeline.json");
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_exec($ch);	
-		curl_close($ch);
+		$url = self::PATH_STATUS_PUBLIC;				
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);		
 	}
 
 	function friends_timeline() 
-	{
-
-
+	{					
+		$url = self::PATH_STATUS_FRIENDS;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
 	}
 	
 	function user_timeline() 
 	{
-
-
-	}
-	
-	function show_status() 
-	{
-
-
+		$url = self::PATH_STATUS_USER;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
 	}
 	
 	function replies() 
 	{
-
-
+		$url = self::PATH_STATUS_REPLIES;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
 	}
 	
+	function show_status() 
+	{
+		$url = self::PATH_USER_SHOW;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
+	}
+		
 	function friends() 
 	{
-
-
+		$url = self::PATH_USER_FRIENDS;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
 	}
 	
 	function followers() 
 	{
-
-
-	}
-
-	function show_user_status() 
-	{
-
-
+		$url = self::PATH_USER_FOLLOWERS;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
 	}
 	
 	function favorites() 
 	{
-
-
+		$url = self::PATH_FAV_FAVORITES;		
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
+		$this->output($xml);
 	}
  
-	/**
-	* Get the document size
-	* @access	public
-	*/
-	function get_status() 
+	function makeRequest($url, $format = 'xml', $auth = false, $data = '')
 	{
-
-
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
+		//curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		
+		if($auth)
+		{
+			curl_setopt($ch, CURLOPT_USERPWD, $this->username .':'. $this->password);
+		}
+		
+		$data = curl_exec($ch);
+		
+		curl_close($ch);
+		
+		return $data;
+	}
+	
+	function output($xml)
+	{
+		foreach ($xml->status as $status) {
+		  echo "<h2>" . $status->user->name . "</h2>";
+		  echo "<p>" . $status->text . "</p>";
+		}
 	}
 
 	/**
@@ -110,17 +178,7 @@ class Ss_twittee{
 	function usage()
 	{
 		
-	return "This plugin returns the size of a file in human readable format (e.g 101.34 KB, 10.41 GB )
-	
-	Wrap the absolute path filename in these tags to have it processed
 
-	{exp:doc_size}/uploads/documents/your_document.pdf{/exp:doc_size}
-
-	If you are using Mark Huot's File extension you can just use the EE tag you chose for the file field
-
-	{exp:ss_human_file_size}{your_file_field}{/exp:ss_human_file_size}
-	
-	The function calculates whether to show KB, MB or GB depending on the file size. 
 	
 	";		
 
