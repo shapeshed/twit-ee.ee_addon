@@ -1,8 +1,8 @@
 Twittee - Show data from Twitter API in ExpressionEngine templates
 ===========================================================================
 
-**Author**: [George Ornbo]
-**Source**: [Github]
+**Author**: [George Ornbo][]
+**Source**: [Github][]
 
 Installation
 -----
