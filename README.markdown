@@ -2,7 +2,7 @@ Twittee - Show data from Twitter API in ExpressionEngine templates
 ===========================================================================
 
 **Author**: [George Ornbo][]
-**Source**: [Github][]
+**Source Code**: [Github][]
 
 Installation
 -----
@@ -74,7 +74,7 @@ To be done
 License
 -------
 
-SS Twittee is licensed under a [Open Source Initiative - BSD License][] license.
+Twittee is licensed under a [Open Source Initiative - BSD License][] license.
 
 
 ---
