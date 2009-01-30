@@ -26,7 +26,7 @@ $plugin_info = array(
           );
 
 /**
- * SS Friendly 404 Plugin
+ * SS Twittee Plugin
  *
  * @category   Plugins
  * @package    ss_friendly_404
