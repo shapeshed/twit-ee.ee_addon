@@ -8,7 +8,7 @@
 * /system/plugins/ folder in your ExpressionEngine installation.
 * 
 * @version    0.0.2
-* @author     George Ornbo <matt@mattwilliamsnyc.com>
+* @author     George Ornbo <george@shapeshed.com>
 * @license    http://opensource.org/licenses/bsd-license.php
 */
  
