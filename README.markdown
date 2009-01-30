@@ -7,12 +7,12 @@ Twittee - Show data from Twitter API in ExpressionEngine templates
 Installation
 -----
 
-This file pi.ss_twittee.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
+This file pi.twittee.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
 
 Name
 ------------------
 
-SS Twittee
+Twittee
 
 Synopsis
 -------
@@ -32,22 +32,29 @@ To be done..
 Single Variables
 -------
 
-{created_at}
-{id}
-{text}
-{source}
-{truncated}
-{in_reply_to_status_id}
-{in_reply_to_user_id}
-{favorited}
-{name}
-{screen_name}
-{description}
-{location}
-{profile_image_url}
-{url}
-{protected}
-{followers_count}
+To fetch the Public Timeline use
+
+	{exp:twittee:public_timeline}
+	{/exp:twittee:public_timeline}
+
+The following single variables are available for the Public Timeline
+
+	{created_at}
+	{id}
+	{text}
+	{source}
+	{truncated}
+	{in_reply_to_status_id}
+	{in_reply_to_user_id}
+	{favorited}
+	{name}
+	{screen_name}
+	{description}
+	{location}
+	{profile_image_url}
+	{url}
+	{protected}
+	{followers_count}
 	
 Examples
 -------
