@@ -2,7 +2,7 @@ Twittee - Show data from Twitter API in ExpressionEngine templates
 ===========================================================================
 
 **Author**: [George Ornbo]
-**Github Repository**: <http://github.com/shapeshed/ss.twittee.ee_addon/>
+**Source**: [Github]
 
 Installation
 -----
@@ -76,4 +76,5 @@ This file is written using the MarkDown syntax. It may or may not have been pars
 
 [Shape Shed]: http://shapeshed.com/
 [ExpressionEngine]:http://www.expressionengine.com/index.php?affiliate=shapeshed
-[Creative Commons Attribution-Share Alike 3.0 Unported]: http://opensource.org/licenses/bsd-license.php
+[Open Source Initiative - BSD License]: http://opensource.org/licenses/bsd-license.php
+[Github]: http://github.com/shapeshed/ss.twittee.ee_addon/
