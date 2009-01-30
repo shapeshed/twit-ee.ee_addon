@@ -1,6 +1,6 @@
 <?php
 /**
-* Plugin File for SS Twittee plugin
+* Plugin File for Twittee plugin
 *
 * Fetches data from Twitter for display in templates
 *
@@ -17,21 +17,21 @@
 * @global array $plugin_info
 */
 $plugin_info = array(
-            'pi_name'      => 'SS Twittee',
-            'pi_version'    => '1.0.0',
-            'pi_author'      => 'George Ornbo, Shape Shed',
-            'pi_author_url'    => 'http://shapeshed.com/',
-            'pi_description'  => 'Fetches data from Twitter for display in templates',
-            'pi_usage'      => Ss_twittee::usage()
+            'pi_name'			=> 'Twittee',
+            'pi_version'		=> '1.0.0',
+            'pi_author'			=> 'George Ornbo',
+            'pi_author_url'		=> 'http://shapeshed.com/',
+            'pi_description'	=> 'Fetches data from Twitter for display in templates',
+            'pi_usage'			=> Twittee::usage()
           );
 
 /**
- * SS Twittee Plugin
+ * Twittee Plugin
  *
  * @category   Plugins
- * @package    ss_friendly_404
+ * @package    Twitee
  */
-class Ss_twittee{
+class Twittee{
 	
 	var $format = "xml";
 	var $return_data = "";
@@ -81,7 +81,7 @@ class Ss_twittee{
     const PATH_HELP_DOWNTIME  = '/help/downtime_schedule';
 	
 
-	function Ss_twittee() 
+	function Twittee() 
     {
 										
 	}
