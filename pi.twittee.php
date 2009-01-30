@@ -1,16 +1,22 @@
 <?php
 /**
-* Plugin File for Twittee plugin
-*
-* Fetches data from Twitter for display in templates
-*
-* This file must be placed in the
-* /system/plugins/ folder in your ExpressionEngine installation.
-* 
-* @version    0.0.2
-* @author     George Ornbo <george@shapeshed.com>
-* @license    http://opensource.org/licenses/bsd-license.php
-*/
+ * ExpressionEngine
+ *
+ * LICENSE
+ *
+ * ExpressionEngine by EllisLab is copyrighted software
+ * The licence agreement is available here http://expressionengine.com/docs/license.html
+ * Plugin File for Twittee plugin
+ *
+ * Fetches data from Twitter for display in templates
+ *
+ * This file must be placed in the
+ * /system/plugins/ folder in your ExpressionEngine installation.
+ * 
+ * @version    0.0.3
+ * @author     George Ornbo <george@shapeshed.com>
+ * @license    http://opensource.org/licenses/bsd-license.php
+ */
  
 /**
 * Plugin information used by ExpressionEngine
@@ -35,6 +41,7 @@ class Twittee{
 	
 	var $format = "xml";
 	var $return_data = "";
+	var $cache_time = "300";
 		
     const API_URL             = 'http://twitter.com';
  
@@ -79,18 +86,38 @@ class Twittee{
  
     const PATH_HELP_TEST      = '/help/test';
     const PATH_HELP_DOWNTIME  = '/help/downtime_schedule';
+
+	const CACHE_PATH          = '/reshape/cache/twitter_cache/';
 	
 
 	function Twittee() 
     {
 										
 	}
-	
+
+    /**
+     * Returns Twitter Public Timeline
+     *
+     * @return string
+     */
 	function public_timeline() 
-	{
-		$url = self::PATH_STATUS_PUBLIC;        
-		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, false));
-		return $this->output($xml);    
+	{	
+		$filename = "public_timeline";
+			
+		if ($this->checkCache($filename))
+		{
+			$url = self::PATH_STATUS_PUBLIC;        
+			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, false, $filename));
+		}
+		else
+		{
+			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
+			{
+			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
+			} 
+
+		}
+		return $this->output($xml);
 	}
 
 	function friends_timeline() 
@@ -142,6 +169,11 @@ class Twittee{
 		return $this->output($xml);
 	}
 	
+    /**
+     * Parses XML and returns ExpressionEngine variables
+     *
+     * @return string
+     */	
 	function output($xml) 
     {
 		global $TMPL;
@@ -180,8 +212,13 @@ class Twittee{
 		return $this->return_data;				
 					
 	}
-	
-	function makeRequest($url, $format = 'xml', $auth = false, $data = '')
+
+    /**
+     * Gets data via a cURL request
+     *
+     * @return string
+     */	
+	function makeRequest($url, $format = 'xml', $auth = false, $filename, $data = '')
 	  {
 	    $ch = curl_init();
 	    curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
@@ -193,11 +230,64 @@ class Twittee{
 	    }
 
 	    $data = curl_exec($ch);
-
+	
 	    curl_close($ch);
 
+		$this->updateCache($data, $filename);
+		
 	    return $data;
 	  }
+
+    /**
+     * Checks whether the cache is stale
+     *
+     * @return bool
+     */	
+	function checkCache($filename)
+	{
+		
+		$last_modified = filemtime($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format); 
+		if (time() - $this->cache_time > $last_modified)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+	
+    /**
+     * Updates the cache
+     *
+     * @return null
+     */
+	function updateCache($data, $filename)	
+	{
+
+		$cache_path = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format;
+
+		if (is_writable($cache_path)) {
+			
+			// Open file and make it writable
+		    if (!$handle = fopen($cache_path, 'w+')) {
+		       // file is not writable 
+		    }
+		
+			// Write the status to the cache
+		    if (fwrite($handle, $data) === FALSE) {
+		        exit;
+		    }
+		
+			//All done so close
+		    fclose($handle);
+		
+		}
+		
+		return;
+
+	}
 
 function usage()
 {
