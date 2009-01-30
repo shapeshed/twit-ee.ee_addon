@@ -32,7 +32,22 @@ To be done..
 Single Variables
 -------
 
-To be done..
+{created_at}
+{id}
+{text}
+{source}
+{truncated}
+{in_reply_to_status_id}
+{in_reply_to_user_id}
+{favorited}
+{name}
+{screen_name}
+{description}
+{location}
+{profile_image_url}
+{url}
+{protected}
+{followers_count}
 	
 Examples
 -------
@@ -52,17 +67,8 @@ To be done
 License
 -------
 
-SS Twittee is licensed under a [Creative Commons Attribution-Share Alike 3.0 Unported][] license.
+SS Twittee is licensed under a [Open Source Initiative - BSD License][] license.
 
-You are free to:
-
-* **Share** - to copy, distribute and transmit the work
-* **Remix** - to adapt the work
-
-Under the following conditions:
-
-* **Attribution** - You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).
-* **Share Alike** - If you alter, transform, or build upon this work, you may distribute the resulting work only under the same, similar or a compatible license.
 
 ---
 
@@ -70,4 +76,4 @@ This file is written using the MarkDown syntax. It may or may not have been pars
 
 [Shape Shed]: http://shapeshed.com/
 [ExpressionEngine]:http://www.expressionengine.com/index.php?affiliate=shapeshed
-[Creative Commons Attribution-Share Alike 3.0 Unported]: http://creativecommons.org/licenses/by-sa/3.0/ 
+[Creative Commons Attribution-Share Alike 3.0 Unported]: http://opensource.org/licenses/bsd-license.php
