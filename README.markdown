@@ -74,7 +74,7 @@ SS Twittee is licensed under a [Open Source Initiative - BSD License][] license.
 
 This file is written using the MarkDown syntax. It may or may not have been parsed. If you are having trouble reading it try running the contents through http://daringfireball.net/projects/markdown/dingus.
 
-[Shape Shed]: http://shapeshed.com/
+[George Ornbo]: http://shapeshed.com/
 [ExpressionEngine]:http://www.expressionengine.com/index.php?affiliate=shapeshed
 [Open Source Initiative - BSD License]: http://opensource.org/licenses/bsd-license.php
 [Github]: http://github.com/shapeshed/ss.twittee.ee_addon/
