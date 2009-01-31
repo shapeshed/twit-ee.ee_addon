@@ -1,4 +1,4 @@
-Twittee - Show data from Twitter API in ExpressionEngine templates
+Twit-ee - Show data from Twitter API in ExpressionEngine templates
 ===========================================================================
 
 **Author**: [George Ornbo][]
@@ -7,12 +7,12 @@ Twittee - Show data from Twitter API in ExpressionEngine templates
 Installation
 -----
 
-This file pi.twittee.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
+This file pi.twitee.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
 
 Name
 ------------------
 
-Twittee
+Twit-ee
 
 Synopsis
 -------
@@ -27,15 +27,27 @@ To be done..
 Parameters
 -------
 
-To be done..
+Status methods
+
+	{exp:twitee:public_timeline}
+	{/exp:twitee:public_timeline}
+	
+	{exp:twitee:friends_timeline}
+	{/exp:twitee:friends_timeline}
+	
+	{exp:twitee:user_timeline}
+	{/exp:twitee:user_timeline}
+	
+	{exp:twitee:replies}
+	{/exp:twitee:replies}
 	
 Single Variables
 -------
 
 To fetch the Public Timeline use
 
-	{exp:twittee:public_timeline}
-	{/exp:twittee:public_timeline}
+	{exp:twitee:public_timeline}
+	{/exp:twitee:public_timeline}
 
 The following single variables are available for the Public Timeline
 
@@ -74,7 +86,7 @@ To be done
 License
 -------
 
-Twittee is licensed under a [Open Source Initiative - BSD License][] license.
+Twit-ee is licensed under a [Open Source Initiative - BSD License][] license.
 
 
 ---
@@ -84,4 +96,4 @@ This file is written using the MarkDown syntax. It may or may not have been pars
 [George Ornbo]: http://shapeshed.com/
 [ExpressionEngine]:http://www.expressionengine.com/index.php?affiliate=shapeshed
 [Open Source Initiative - BSD License]: http://opensource.org/licenses/bsd-license.php
-[Github]: http://github.com/shapeshed/ss.twittee.ee_addon/
+[Github]: http://github.com/shapeshed/ss.twitee.ee_addon/
