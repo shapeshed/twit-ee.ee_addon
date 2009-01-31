@@ -150,7 +150,7 @@ class Twitee{
 			} 
 
 		}
-		return $this->output($xml);
+		return $this->output($xml, 'status');
 	}
 	
 	/**
@@ -229,23 +229,27 @@ class Twitee{
 		return $this->output($xml);		
 	}
 	
-	function show_status() 
-	{
-		$url = self::PATH_USER_SHOW;    
-		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
-		return $this->output($xml);
-	}
-	
 	/**
 	* Returns Twitter Friends for the authenticated user
 	*
 	* @return string
 	*/
 	function friends() 
-	{
-		$url = self::PATH_USER_FRIENDS;    
-		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
-		return $this->output($xml);
+	{		
+		if ($this->checkCache($filename))
+		{
+			$url = self::PATH_USER_FRIENDS;      
+			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
+		}
+		else
+		{
+			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
+			{
+			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
+			} 
+			
+		}
+		return $this->output($xml, 'basic_user');
 	}
 	
 	/**
@@ -254,54 +258,145 @@ class Twitee{
 	* @return string
 	*/
 	function followers() 
-	{
-		$url = self::PATH_USER_FOLLOWERS;    
-		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));
-		return $this->output($xml);
+	{		
+		if ($this->checkCache($filename))
+		{
+			$url = self::PATH_USER_FOLLOWERS;      
+			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
+		}
+		else
+		{
+			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
+			{
+			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
+			} 
+			
+		}
+		return $this->output($xml, 'basic_user');
 	}
 	
 	/**
-	* Parses XML and returns ExpressionEngine variables
+	* Returns Twitter Followers for the authenticated user
+	*
+	* @return string
+	*/
+	function favorites() 
+	{		
+		if ($this->checkCache($filename))
+		{
+			$url = self::PATH_FAV_FAVORITES;      
+			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
+		}
+		else
+		{
+			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
+			{
+			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
+			} 
+			
+		}
+		return $this->output($xml, 'status');
+	}
+	
+	/**
+	* Call the correct parser and returns results
 	*
 	* @return string
 	*/	
-	function output($xml) 
+	function output($xml, $type) 
     {
+		switch ($type) 
+		{
+			case "status":
+				return $this->parse_status($xml);
+			break; 
+			case "basic_user":
+				return $this->parse_basic_user($xml);
+			break;
+		}
+					
+	}
+	
+	function parse_status($xml)
+	{
 		global $TMPL;
 		
-		// Loop through XML file using SimpleXML
+		$count = 0;
+		$limit = 10;
+
 		foreach ($xml->status as $status)
 		{
-			$tagdata = $TMPL->tagdata;
+			if($count == $limit){
+			        break;
+			    }
 			
-			// Push status variables to EE variables
+			
+			$tagdata = $TMPL->tagdata;
+
 			foreach ($TMPL->var_single as $key => $val)
+			{
+				if (isset($status->$val))
+				{
+				$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
+				}
+			}
+				
+			foreach ($status->user as $user)
+			{
+				foreach ($TMPL->var_single as $key => $val)
+				{
+					if (isset($user->$val))
+					{
+					$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
+					}
+				}
+
+			}
+
+		$this->return_data .= $tagdata;
+		$count++;
+
+		}
+		
+		return $this->return_data;	
+		
+	}
+	
+	function parse_basic_user($xml)
+	{
+		global $TMPL;
+
+		foreach ($xml->user as $user)
+		
+		{
+			$tagdata = $TMPL->tagdata;
+
+			foreach ($TMPL->var_single as $key => $val)
+			{
+				if (isset($user->$val))
+				{
+				$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
+				}
+			}
+				
+			foreach ($user->status as $status)
+			{
+				foreach ($TMPL->var_single as $key => $val)
 				{
 					if (isset($status->$val))
 					{
 					$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
 					}
 				}
-			
-			// Descend to user and push user variables to EE variables				
-			foreach ($status->user as $user)
-			{
-				foreach ($TMPL->var_single as $key => $val)
-					{
-						if (isset($user->$val))
-						{
-						$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
-						}
-					}
-					
+
 			}
+
+		$this->return_data .= $tagdata;
+
+		}
 		
-			$this->return_data .= $tagdata;
-				
-		}	
+		return $this->return_data;	
 		
-		return $this->return_data;				
-					
 	}
 	
 	/**

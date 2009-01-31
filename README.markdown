@@ -41,27 +41,68 @@ Status methods
 	{exp:twitee:replies}
 	{/exp:twitee:replies}
 	
+	{exp:twitee:favorites}
+	{/exp:twitee:favorites}
+	
+Basic user method
+
+	{exp:twitee:friends}
+	{/exp:twitee:friends}
+
+	{exp:twitee:followers}
+	{/exp:twitee:followers}
+
+	
 Single Variables
 -------
 
-The following single variables are available for Status methods
+Status methods
 
-	{created_at}
-	{id}
-	{text}
-	{source}
-	{truncated}
-	{in_reply_to_status_id}
-	{in_reply_to_user_id}
-	{favorited}
-	{name}
-	{screen_name}
-	{description}
-	{location}
-	{profile_image_url}
-	{url}
-	{protected}
-	{followers_count}
+	Status
+		{created_at}
+		{id}
+		{text}
+		{source}
+		{truncated}
+		{in_reply_to_status_id}
+		{in_reply_to_user_id}
+		{favorited}
+
+		User
+			{id}
+			{name}
+			{screen_name}
+			{description}
+			{location}
+			{profile_image_url}
+			{url}
+			{protected}
+			{followers_count}
+
+
+Basic user methods
+
+	User
+		{id}
+		{name}
+		{screen_name}
+		{location}
+		{description}
+		{profile_image_url}
+		{url}
+		{protected}
+		{followers_count}
+		{created_at}
+
+		Status
+			{id}
+			{text}
+			{source}
+			{truncated}
+			{in_reply_to_status_id}
+			{in_reply_to_user_id}
+			{favorited}
+			{in_reply_to_screen_name}
 	
 Examples
 -------
