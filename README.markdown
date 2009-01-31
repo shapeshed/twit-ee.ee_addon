@@ -44,12 +44,7 @@ Status methods
 Single Variables
 -------
 
-To fetch the Public Timeline use
-
-	{exp:twitee:public_timeline}
-	{/exp:twitee:public_timeline}
-
-The following single variables are available for the Public Timeline
+The following single variables are available for Status methods
 
 	{created_at}
 	{id}
