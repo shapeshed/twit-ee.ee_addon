@@ -42,7 +42,7 @@ class Twitee{
 	
 	var $format = "xml";
 	var $return_data = "";
-	var $cache_time = "300";
+	var $cache_time = "30";
 		
 	const API_URL             = 'http://twitter.com';
 	
@@ -74,6 +74,7 @@ class Twitee{
 	const PATH_ACCT_ARCHIVE		= 	'/account/archive';
 	const PATH_ACCT_LOCATION	= 	'/account/update_location';
 	const PATH_ACCT_DEVICE		= 	'/account/update_delivery_device';
+	const PATH_ACCT_STATUS		= 	'/account/rate_limit_status';
 
 	const PATH_FAV_FAVORITES	= 	'/favorites';
 	const PATH_FAV_CREATE		= 	'/favorites/create';
@@ -121,36 +122,20 @@ class Twitee{
 	* @return Arc90_Service_Twitter Provides a fluent interface.
 	*/
 	public function setAuth($username, $password)
-	{
-	$this->_authUsername = $username;
-	$this->_authPassword = $password;
-	
-	return $this;
+	{		
+		$this->_authUsername = $username;
+		$this->_authPassword = $password;
+		return $this;		
 	}
-	
+		
 	/**
 	* Returns Twitter Public Timeline
 	*
 	* @return string
 	*/
-	function public_timeline() 
-	{	
-		$filename = "public_timeline";
-			
-		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_STATUS_PUBLIC;        
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, false, $filename));
-		}
-		else
-		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-
-		}
-		return $this->output($xml, 'status');
+	public function public_timeline() 
+	{
+		return $this->getData('public_timeline', self::PATH_STATUS_PUBLIC,  false, 'status');
 	}
 	
 	/**
@@ -158,24 +143,9 @@ class Twitee{
 	*
 	* @return string
 	*/
-	function friends_timeline() 
+	public function friends_timeline() 
 	{   
-		$filename = "friends_timeline";     
-		
-		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_STATUS_FRIENDS;      
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
-		}
-		else
-		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-
-		}
-		return $this->output($xml);		
+		return $this->getData('friends_timeline', self::PATH_STATUS_FRIENDS, true, 'status');	
 	}
 	
 	/**
@@ -183,25 +153,9 @@ class Twitee{
 	*
 	* @return string
 	*/
-	function user_timeline() 
+	public function user_timeline() 
 	{
-		$filename = "user_timeline";     
-		
-		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_STATUS_USER;      
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
-		}
-		else
-		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-			
-		}
-		return $this->output($xml);		
-	
+		return $this->getData('user_timeline', self::PATH_STATUS_USER, true, 'status');		
 	}
 	
 	/**
@@ -211,22 +165,7 @@ class Twitee{
 	*/
 	function replies() 
 	{
-		$filename = "replies";     
-		
-		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_STATUS_REPLIES;      
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
-		}
-		else
-		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-			
-		}
-		return $this->output($xml);		
+		return $this->getData('friends_timeline', self::PATH_STATUS_REPLIES, true, 'status');	
 	}
 	
 	/**
@@ -234,22 +173,9 @@ class Twitee{
 	*
 	* @return string
 	*/
-	function friends() 
+	public function friends() 
 	{		
-		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_USER_FRIENDS;      
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
-		}
-		else
-		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-			
-		}
-		return $this->output($xml, 'basic_user');
+		return $this->getData('friends', self::PATH_USER_FRIENDS, true, 'basic_user');
 	}
 	
 	/**
@@ -257,45 +183,39 @@ class Twitee{
 	*
 	* @return string
 	*/
-	function followers() 
+	public function followers() 
 	{		
-		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_USER_FOLLOWERS;      
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
-		}
-		else
-		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-			
-		}
-		return $this->output($xml, 'basic_user');
+		return $this->getData('followers', self::PATH_USER_FOLLOWERS, true, 'basic_user');
 	}
 	
 	/**
-	* Returns Twitter Followers for the authenticated user
+	* Returns Twitter Favorites for the authenticated user
 	*
 	* @return string
 	*/
-	function favorites() 
+	public function favorites() 
 	{		
+		return $this->getData('favorites', self::PATH_FAV_FAVORITES, true, 'status');
+	}
+	
+	/**
+	* Sends request and handles response
+	*
+	* @return string
+	*/
+	function getData($filename, $url, $auth, $xml_parser)
+	{			
 		if ($this->checkCache($filename))
-		{
-			$url = self::PATH_FAV_FAVORITES;      
-			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true, $filename));
+		{    
+			$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, $auth, $data, $filename));
 		}
+				
 		else
 		{
-			if (file_exists($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format)) 
-			{
-			    $xml = simplexml_load_file($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format);
-			} 
-			
+			$xml = simplexml_load_file($this->getCache($filename));
 		}
-		return $this->output($xml, 'status');
+			
+		return $this->output($xml, $xml_parser);	    
 	}
 	
 	/**
@@ -310,9 +230,10 @@ class Twitee{
 			case "status":
 				return $this->parse_status($xml);
 			break; 
+			
 			case "basic_user":
 				return $this->parse_basic_user($xml);
-			break;
+			break;			
 		}
 					
 	}
@@ -321,8 +242,7 @@ class Twitee{
 	{
 		global $TMPL;
 		
-		$limit = ( ! $TMPL->fetch_param('limit')) ? '' : $TMPL->fetch_param('limit');
-		
+		$limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');		
 		$count = 0;
 		
 		foreach ($xml->status as $status)
@@ -368,12 +288,10 @@ class Twitee{
 	{
 		global $TMPL;
 		
-		$limit = ( ! $TMPL->fetch_param('limit')) ? '' : $TMPL->fetch_param('limit');
-		
+		$limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');		
 		$count = 0;
 		
-		foreach ($xml->user as $user)
-		
+		foreach ($xml->user as $user)		
 		{
 			
 			if($count == $limit)
@@ -417,25 +335,43 @@ class Twitee{
 	*
 	* @return string
 	*/
-	function makeRequest($url, $format = 'xml', $auth = false, $filename, $data = '')
+	function makeRequest($url, $format = 'xml', $auth = false, $data = '', $filename)
 	  {
-	    $ch = curl_init();
-	    curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		
 		if($auth)
 		{
-		    curl_setopt($ch, CURLOPT_USERPWD, "{$this->_authUsername}:{$this->_authPassword}");
+			curl_setopt($ch, CURLOPT_USERPWD, "{$this->_authUsername}:{$this->_authPassword}");
 		}
-
-	    $data = curl_exec($ch);
-	
-	    curl_close($ch);
-	
+		
+		$data = curl_exec($ch);
+		
+		curl_close($ch);
+		
 		$this->updateCache($data, $filename);
 		
-	    return $data;
+		return $data;
 	  }
+	/**
+	* Checks whether user has not reached limit of API calls
+	*
+	* @return bool
+	*/	
+	function checkRate()
+	{
+		$url = self::PATH_ACCT_STATUS; 
+		$xml = new SimpleXMLElement($this->makeRequest($url, $this->format, true));	
+		if ($xml->{'remaining-hits'} != 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
 	/**
 	* Checks whether the cache is stale
@@ -444,8 +380,9 @@ class Twitee{
 	*/	
 	function checkCache($filename)
 	{
-		
+
 		$last_modified = filemtime($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format); 
+		
 		if (time() - $this->cache_time > $last_modified)
 		{
 			return true;
@@ -458,16 +395,30 @@ class Twitee{
 	}
 	
 	/**
+	* Returns path to cache file
+	*
+	* @return bool
+	*/	
+	function getCache($filename)
+	{
+		
+		$cache_path = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format;
+
+		return $cache_path;
+		
+	}
+	
+	/**
 	* Updates the cache
 	*
 	* @return null
 	*/
 	function updateCache($data, $filename)	
-	{
-		
+	{	
 		$cache_path = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format;
 		
-		if (is_writable($cache_path)) {
+		if (is_writable($cache_path)) 
+		{
 			
 			// Open file and make it writable
 		    if (!$handle = fopen($cache_path, 'w+')) {
@@ -482,6 +433,12 @@ class Twitee{
 			//All done so close
 		    fclose($handle);
 		
+		}
+		else
+		{
+		
+			echo 'file is not writeable';
+			
 		}
 		
 		return;

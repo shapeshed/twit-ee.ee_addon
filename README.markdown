@@ -89,7 +89,13 @@ Returns the authenticating user's followers, each with current status inline.  T
 
 	limit=5
 	
-Limits the number of results returned. Default - no limit
+Limits the number of results returned. Default - 10
+
+### Refresh ###
+
+	refresh=5
+	
+The number of minutes between cache refreshes. Default - 5 minutes.
 
 ## Single Variables ##
 
