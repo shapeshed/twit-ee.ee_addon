@@ -5,9 +5,9 @@
 
 ## Compatibility
 
-ExpressionEngine Version 1.6.x
-PHP 5.x.x
-cURL support
+* ExpressionEngine Version 1.6.x
+* PHP 5.x.x
+* cURL support
 
 ## Installation
 
@@ -29,6 +29,7 @@ To be done..
 ## Tags
 
 ### Status Methods ###
+
 
 #### Public Timeline ####
 
