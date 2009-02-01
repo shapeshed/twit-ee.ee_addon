@@ -321,18 +321,20 @@ class Twitee{
 	{
 		global $TMPL;
 		
+		$limit = ( ! $TMPL->fetch_param('limit')) ? '' : $TMPL->fetch_param('limit');
+		
 		$count = 0;
-		$limit = 10;
-
+		
 		foreach ($xml->status as $status)
 		{
-			if($count == $limit){
-			        break;
-			    }
 			
+			if($count == $limit)
+			{
+				break;
+			}			
 			
 			$tagdata = $TMPL->tagdata;
-
+			
 			foreach ($TMPL->var_single as $key => $val)
 			{
 				if (isset($status->$val))
@@ -350,12 +352,12 @@ class Twitee{
 					$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
 					}
 				}
-
+				
 			}
-
+			
 		$this->return_data .= $tagdata;
 		$count++;
-
+		
 		}
 		
 		return $this->return_data;	
@@ -365,12 +367,22 @@ class Twitee{
 	function parse_basic_user($xml)
 	{
 		global $TMPL;
-
+		
+		$limit = ( ! $TMPL->fetch_param('limit')) ? '' : $TMPL->fetch_param('limit');
+		
+		$count = 0;
+		
 		foreach ($xml->user as $user)
 		
 		{
+			
+			if($count == $limit)
+			{
+				break;
+			}
+			
 			$tagdata = $TMPL->tagdata;
-
+			
 			foreach ($TMPL->var_single as $key => $val)
 			{
 				if (isset($user->$val))
@@ -388,14 +400,15 @@ class Twitee{
 					$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
 					}
 				}
-
+				
 			}
-
+			
 		$this->return_data .= $tagdata;
-
+		
 		}
 		
 		return $this->return_data;	
+		$count++;
 		
 	}
 	
