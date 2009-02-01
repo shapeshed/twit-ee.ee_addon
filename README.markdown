@@ -24,7 +24,7 @@ Show data from Twitter API in ExpressionEngine templates
 
 ## Description
 
-Twit-ee fetches data from the Twitter API and allows you to display it in your ExpressionEngine templates. A variety of tags are available to allow you to show your own tweets, your friends tweets and more.
+Twit-ee fetches data from the Twitter API and allows you to display it in your ExpressionEngine templates. A variety of tags are available allowing you to show your own tweets, your friends tweets and more.
 
 ## Tags
 
