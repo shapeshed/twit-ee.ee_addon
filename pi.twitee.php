@@ -1,6 +1,6 @@
 <?php
 /**
- * ExpressionEngine
+ * ExpressionEngine - Branch test
  *
  * LICENSE
  *
