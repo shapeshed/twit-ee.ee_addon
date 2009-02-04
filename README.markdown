@@ -11,8 +11,11 @@
 
 ## Installation
 
-This file pi.twitee.php must be placed in the /system/plugins/ folder in your ExpressionEngine installation.
-Ensure your /system/cache/ folder is writable. 
+* Copy the /modules/twitee folder to your /system/modules/ folder
+* Copy the /language/english/lang.twitee.php file to your /system/languages/english folder
+* Open the [Module Manager](http://www.expressionengine.com/index.php?affiliate=shapeshed&page=/docs/cp/modules/index.html)
+* Install the Twit-ee module
+* In the module enter your username and password 
 
 ## Name
 
@@ -101,6 +104,8 @@ The number of minutes between cache refreshes. Default - 5 minutes.
 
 ### For Status methods ###
 
+Public Timeline, Friends Timeline, User Timeline, Replies and Favorites
+
 	Status
 		{created_at}
 		{id}
@@ -124,6 +129,8 @@ The number of minutes between cache refreshes. Default - 5 minutes.
 
 
 ### For Basic user methods ###
+
+Friends, Followers
 
 	User
 		{id}

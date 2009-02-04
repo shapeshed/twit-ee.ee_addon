@@ -1,19 +1,16 @@
 <?php
 /**
- * ExpressionEngine - Branch test
+ * ExpressionEngine
  *
  * LICENSE
  *
  * ExpressionEngine by EllisLab is copyrighted software
  * The licence agreement is available here http://expressionengine.com/docs/license.html
  * 
- * Plugin File for Twittee module
+ * Module Class File for Twit-ee module
  *
  * Fetches data from Twitter for display in templates
  *
- * This file must be placed in the
- * /system/plugins/ folder in your ExpressionEngine installation.
- * 
  * @version    0.0.4
  * @author     George Ornbo <george@shapeshed.com>
  * @license    http://opensource.org/licenses/bsd-license.php
@@ -23,14 +20,10 @@
  * Twit-ee module
  *
  * @category   Modules
- * @package    Twitee
+ * @package    Twit-ee
  */
 class Twitee{
-	
-	var $format = "xml";
-	var $return_data = "";
-	var $refresh = "";
-		
+			
 	const API_URL             = 'http://twitter.com';
 	
 	// API URLs
@@ -77,6 +70,32 @@ class Twitee{
 	const PATH_HELP_DOWNTIME	= 	'/help/downtime_schedule';
 
 	const CACHE_PATH			= 	'/reshape/cache/twitter_cache/';
+
+	/**
+	* Data sent back to calling function
+	* @var string
+	*/	
+	var $return_data = "";
+
+	/**
+	* Sets how long data is cached for
+	* @see __construct
+	* @var string
+	*/	
+	var $refresh = "";
+	
+	/**
+	* Sets the limit on how many results are displayed
+	* @see __construct
+	* @var string
+	*/	
+	var $limit = "";
+	
+	/**
+	* Sets the data format of the response
+	* @var string
+	*/
+	var $format = "xml";
 	
 	/**
 	 * Twitter account username.
@@ -102,8 +121,8 @@ class Twitee{
 		
 		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
 		
-		echo $this->refresh;
-
+		$this->limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');
+		
 		$query = $DB->query("SELECT * FROM exp_twitee LIMIT 0,1");
 
 		if ($query->num_rows != 0)
@@ -122,7 +141,6 @@ class Twitee{
 	*
 	* @param  string $username Twitter account username
 	* @param  string $password Twitter account password
-	* @return Arc90_Service_Twitter Provides a fluent interface.
 	*/
 	public function setAuth($username, $password)
 	{		
@@ -244,14 +262,13 @@ class Twitee{
 	function parse_status($xml)
 	{
 		global $TMPL;
-		
-		$limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');		
+				
 		$count = 0;
 		
 		foreach ($xml->status as $status)
 		{
 			
-			if($count == $limit)
+			if($count == $this->limit)
 			{
 				break;
 			}			
@@ -290,14 +307,13 @@ class Twitee{
 	function parse_basic_user($xml)
 	{
 		global $TMPL;
-		
-		$limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');		
+	
 		$count = 0;
 		
 		foreach ($xml->user as $user)		
 		{
 			
-			if($count == $limit)
+			if($count == $this->limit)
 			{
 				break;
 			}
