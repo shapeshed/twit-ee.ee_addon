@@ -29,7 +29,7 @@ class Twitee{
 	
 	var $format = "xml";
 	var $return_data = "";
-	var $cache_time = "30";
+	var $refresh = "";
 		
 	const API_URL             = 'http://twitter.com';
 	
@@ -98,7 +98,23 @@ class Twitee{
 	*/
 	public function __construct($username =null, $password =null)
 	{
-	    $this->setAuth('', '');
+		global $DB, $LANG, $OUT, $TMPL;
+		
+		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
+		
+		echo $this->refresh;
+
+		$query = $DB->query("SELECT * FROM exp_twitee LIMIT 0,1");
+
+		if ($query->num_rows != 0)
+		{		
+	    	$this->setAuth($query->result[0]['username'], str_rot13($query->result[0]['password']));
+		}	
+		else
+		{		
+			return $OUT->show_user_error('general', array("You don't seem to have entered a twitter username and password. You can do this in the module settings."));
+		}
+
 	}
 	
 	/**
@@ -370,7 +386,7 @@ class Twitee{
 
 		$last_modified = filemtime($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format); 
 		
-		if (time() - $this->cache_time > $last_modified)
+		if (time() - $this->refresh > $last_modified)
 		{
 			return true;
 		}
