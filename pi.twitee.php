@@ -111,7 +111,7 @@ class Twitee{
 	*/
 	public function __construct($username =null, $password =null)
 	{
-	    $this->setAuth('shapeshed', 'tufnell5');
+	    $this->setAuth('', '');
 	}
 	
 	/**
