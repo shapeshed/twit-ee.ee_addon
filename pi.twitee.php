@@ -111,7 +111,7 @@ class Twitee{
 	*/
 	public function __construct($username =null, $password =null)
 	{
-	    $this->setAuth('', '');
+	    $this->setAuth('shapeshed', 'tufnell5');
 	}
 	
 	/**
@@ -134,7 +134,7 @@ class Twitee{
 	* @return string
 	*/
 	public function public_timeline() 
-	{
+	{		
 		return $this->getData('public_timeline', self::PATH_STATUS_PUBLIC,  false, 'status');
 	}
 	
@@ -415,31 +415,28 @@ class Twitee{
 	*/
 	function updateCache($data, $filename)	
 	{	
-		$cache_path = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format;
-		
-		if (is_writable($cache_path)) 
+		$cache_dir = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH;
+		$cache_file = $cache_dir . $filename .'.'. $this->format;
+
+		if ( ! @is_dir($cache_dir))
 		{
-			
-			// Open file and make it writable
-		    if (!$handle = fopen($cache_path, 'w+')) {
-		       // file is not writable 
-		    }
+			if ( ! @mkdir($cache_dir, 0777))
+			{
+				return FALSE;
+			}
+			@chmod($cache_dir, 0777);            
+		}	
 		
-			// Write the status to the cache
-		    if (fwrite($handle, $data) === FALSE) {
-		        exit;
-		    }
-		
-			//All done so close
-		    fclose($handle);
-		
-		}
-		else
+		if ( ! $fp = @fopen($cache_file, 'wb'))
 		{
-		
-			echo 'file is not writeable';
-			
+			return FALSE;
 		}
+		
+		flock($fp, LOCK_EX);
+		fwrite($fp, $data);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+		@chmod($cache_file, 0777);
 		
 		return;
 		
