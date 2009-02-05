@@ -11,7 +11,7 @@
  *
  * Fetches data from Twitter for display in templates
  *
- * @version    0.0.4
+ * @version    0.1
  * @author     George Ornbo <george@shapeshed.com>
  * @license    http://opensource.org/licenses/bsd-license.php
  */
@@ -23,7 +23,7 @@
  * @package    Twit-ee
  */
 class Twitee{
-			
+				
 	const API_URL             = 'http://twitter.com';
 	
 	// API URLs
@@ -68,9 +68,8 @@ class Twitee{
 
 	const PATH_HELP_TEST		= 	'/help/test';
 	const PATH_HELP_DOWNTIME	= 	'/help/downtime_schedule';
-
-	const CACHE_PATH			= 	'/reshape/cache/twitter_cache/';
-
+	
+	
 	/**
 	* Data sent back to calling function
 	* @var string
@@ -78,14 +77,14 @@ class Twitee{
 	var $return_data = "";
 
 	/**
-	* Sets how long data is cached for
+	* Sets how long data is cached for. Set to a default of 5 mins in __construct
 	* @see __construct
 	* @var string
 	*/	
 	var $refresh = "";
 	
 	/**
-	* Sets the limit on how many results are displayed
+	* Sets the limit on how many results are displayed. Set to a default of 10 in __construct
 	* @see __construct
 	* @var string
 	*/	
@@ -96,6 +95,13 @@ class Twitee{
 	* @var string
 	*/
 	var $format = "xml";
+	
+	/**
+	* The cache folder to be used for caching responses. Set using $PREF->ini variable in __construct
+	* @var string
+	* @var string
+	*/
+	var $cache_folder = "";
 	
 	/**
 	 * Twitter account username.
@@ -117,7 +123,9 @@ class Twitee{
 	*/
 	public function __construct($username =null, $password =null)
 	{
-		global $DB, $LANG, $OUT, $TMPL;
+		global $DB, $LANG, $OUT, $TMPL, $PREFS;
+		
+		$this->cache_path	= 	$PREFS->ini('system_folder', TRUE). 'cache/twitter_cache/';
 		
 		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
 		
@@ -141,6 +149,7 @@ class Twitee{
 	*
 	* @param  string $username Twitter account username
 	* @param  string $password Twitter account password
+	* @return array Adds username and password to the $this array
 	*/
 	public function setAuth($username, $password)
 	{		
@@ -152,7 +161,8 @@ class Twitee{
 	/**
 	* Returns Twitter Public Timeline
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	public function public_timeline() 
 	{		
@@ -162,7 +172,8 @@ class Twitee{
 	/**
 	* Returns Twitter Friends Timeline
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	public function friends_timeline() 
 	{   
@@ -172,7 +183,8 @@ class Twitee{
 	/**
 	* Returns Twitter User Timeline
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	public function user_timeline() 
 	{
@@ -182,7 +194,8 @@ class Twitee{
 	/**
 	* Returns Twitter Replies for the authenticated user
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	function replies() 
 	{
@@ -192,7 +205,8 @@ class Twitee{
 	/**
 	* Returns Twitter Friends for the authenticated user
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	public function friends() 
 	{		
@@ -202,7 +216,8 @@ class Twitee{
 	/**
 	* Returns Twitter Followers for the authenticated user
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	public function followers() 
 	{		
@@ -212,7 +227,8 @@ class Twitee{
 	/**
 	* Returns Twitter Favorites for the authenticated user
 	*
-	* @return string
+	* @see getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	public function favorites() 
 	{		
@@ -220,9 +236,18 @@ class Twitee{
 	}
 	
 	/**
-	* Sends request and handles response
+	* The heavy lifting part of the class. Checks if the cache is stale by calling checkCache(), makes the request if necessary 
+	* by calling makeRequest(), get the cache if not by calling getCache() and returns parsed xml by calling output().
 	*
-	* @return string
+	* @param string $filename The filename for the request. Also used for reading / writing cache
+	* @param string $url The twitter URL. Used to build cURL request to Twitter API
+	* @param bool $auth Sets whether the request should use authorisation or not.
+	* @param string $xml_parser Sets which parser should be used for the returned xml
+	* @see function checkCache()
+	* @see function makeRequest()
+	* @see function getCache()
+	* @see function output()
+	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
 	function getData($filename, $url, $auth, $xml_parser)
 	{			
@@ -242,7 +267,11 @@ class Twitee{
 	/**
 	* Call the correct parser and returns results
 	*
-	* @return string
+	* @param string $xml the xml to be parsed
+	* @param string $type Sets the type of parser to be used for the xml
+	* @see function parse_status()
+	* @see function parse_basic_user
+	* @return string Returns parsed xml
 	*/	
 	function output($xml, $type) 
     {
@@ -259,6 +288,12 @@ class Twitee{
 					
 	}
 	
+	/**
+	* Parses XML and returns as ExpressionEngine variables.
+	*
+	* @param string $xml the xml to be parsed
+	* @return string Returns parsed xml
+	*/	
 	function parse_status($xml)
 	{
 		global $TMPL;
@@ -304,6 +339,12 @@ class Twitee{
 		
 	}
 	
+	/**
+	* Parses XML and returns as ExpressionEngine variables.
+	*
+	* @param string $xml the xml to be parsed
+	* @return string Returns parsed xml
+	*/
 	function parse_basic_user($xml)
 	{
 		global $TMPL;
@@ -352,7 +393,13 @@ class Twitee{
 	/**
 	* Gets data via a cURL request
 	*
-	* @return string
+	* @param string $url The twitter URL. Used to build cURL request to Twitter API
+	* @param string $format The format of the outputed data e.g. xml, json, atom, rss
+	* @param bool $auth Sets whether the request should use authorisation or not.
+	* @param string $data Variable to contain returned data
+	* @param string $filename The filename for the request. Also ued for reading / writing cache
+	* @see function updateCache()
+	* @return string Returns raw data from the Twitter API request
 	*/
 	function makeRequest($url, $format = 'xml', $auth = false, $data = '', $filename)
 	  {
@@ -376,7 +423,8 @@ class Twitee{
 	/**
 	* Checks whether user has not reached limit of API calls
 	*
-	* @return bool
+	* @see makeRequest()
+	* @return bool Returns TRUE if user has not exceeded API call limit
 	*/	
 	function checkRate()
 	{
@@ -395,12 +443,13 @@ class Twitee{
 	/**
 	* Checks whether the cache is stale
 	*
-	* @return bool
+	* @param string $filename The filename of the cache file
+	* @return bool Returns TRUE if cache is stale
 	*/	
 	function checkCache($filename)
 	{
 
-		$last_modified = filemtime($_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format); 
+		$last_modified = filemtime($_SERVER['DOCUMENT_ROOT'] . $this->cache_path . $filename .'.'. $this->format); 
 		
 		if (time() - $this->refresh > $last_modified)
 		{
@@ -416,25 +465,28 @@ class Twitee{
 	/**
 	* Returns path to cache file
 	*
-	* @return bool
+	* @param string $filename The filename of the cache file
+	* @return string Returns path to cache file
 	*/	
 	function getCache($filename)
 	{
 		
-		$cache_path = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH . $filename .'.'. $this->format;
-
-		return $cache_path;
+		$full_cache_path = $_SERVER['DOCUMENT_ROOT'] . $this->cache_path . $filename .'.'. $this->format;
+		
+		return $full_cache_path;
 		
 	}
 	
 	/**
 	* Updates the cache
 	*
+	* @param string $data The data to be written to the cache
+	* @param string $filename The filename for the cache file
 	* @return null
 	*/
 	function updateCache($data, $filename)	
 	{	
-		$cache_dir = $_SERVER['DOCUMENT_ROOT'] . self::CACHE_PATH;
+		$cache_dir = $_SERVER['DOCUMENT_ROOT'] . $this->cache_path;
 		$cache_file = $cache_dir . $filename .'.'. $this->format;
 
 		if ( ! @is_dir($cache_dir))
@@ -460,9 +512,7 @@ class Twitee{
 		return;
 		
 	}
-	
-/* END */
-	
+		
 }
 
 ?>

@@ -14,8 +14,9 @@
 * Copy the /modules/twitee folder to your /system/modules/ folder
 * Copy the /language/english/lang.twitee.php file to your /system/languages/english folder
 * Open the [Module Manager](http://www.expressionengine.com/index.php?affiliate=shapeshed&page=/docs/cp/modules/index.html)
+* Ensure that your /system/cache/ folder is writable
 * Install the Twit-ee module
-* In the module enter your username and password 
+* In the module enter your Twitter username and password 
 
 ## Name
 
