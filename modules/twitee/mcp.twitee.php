@@ -1,8 +1,6 @@
 <?php
 /**
- * ExpressionEngine
- *
- * LICENSE
+ * ExpressionEngine License
  *
  * ExpressionEngine by EllisLab is copyrighted software
  * The licence agreement is available here http://expressionengine.com/docs/license.html
@@ -11,8 +9,7 @@
  *
  * Fetches data from Twitter for display in templates
  *
- * 
- * @version    0.0.4
+ * @version    0.8
  * @author     George Ornbo <george@shapeshed.com>
  * @license    http://opensource.org/licenses/bsd-license.php
  */
@@ -30,7 +27,7 @@ class Twitee_CP {
 	* Version number of the module
 	* @var string
 	*/
-    var $version        = '0.0.4';
+    var $version        = '0.8';
 
 	/**
 	* Settings used in this module
@@ -210,7 +207,8 @@ class Twitee_CP {
 			/*
 			Because of Twitter's use of the password anti-pattern we need to 
 			get the password out as plain text. This means we can't use MD5 or SHA1
-			Crap! So provide some limited protection with str_rot13.	
+			Crap! So provide some limited protection with str_rot13.
+			can haz OAuth plz? kthnxbai	
 			*/
 			
 			$data = array(	'username' 	=> $IN->GBL('twitter_username', 'POST'),

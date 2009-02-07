@@ -1,19 +1,15 @@
 <?php
 /**
- * ExpressionEngine
- *
- * LICENSE
- *
- * ExpressionEngine by EllisLab is copyrighted software
- * The licence agreement is available here http://expressionengine.com/docs/license.html
  * 
- * Module Class File for Twit-ee module
+ * Main Module Class for Twit-ee
  *
- * Fetches data from Twitter for display in templates
+ * Fetches data from Twitter for display in ExpressionEngine templates
+ * 
+ * This class is derived from {@link http://code.google.com/p/arc90-service-twitter/ Arc90_Service_Twitter} 
  *
- * @version    0.1
+ * @version    0.8
  * @author     George Ornbo <george@shapeshed.com>
- * @license    http://opensource.org/licenses/bsd-license.php
+ * @license    {@link http://opensource.org/licenses/bsd-license.php BSD License}
  */
 
 /**
@@ -43,34 +39,40 @@ class Twitee{
 	* Data sent back to calling function
 	* @var string
 	*/	
-	var $return_data = "";
+	public $return_data = "";
 
 	/**
 	* Sets how long data is cached for. Set to a default of 5 mins in __construct
 	* @see __construct
 	* @var string
 	*/	
-	var $refresh = "";
+	public $refresh = "";
 	
 	/**
 	* Sets the limit on how many results are displayed. Set to a default of 10 in __construct
 	* @see __construct
 	* @var string
 	*/	
-	var $limit = "";
+	public $limit = "";
 	
 	/**
 	* Sets the data format of the response
 	* @var string
 	*/
-	var $format = "xml";
+	public $format = "xml";
 	
 	/**
 	* The cache folder to be used for caching responses.
 	* @var string
-	* @var string
 	*/
-	var $cache_folder = "twitter_cache/";
+	public $cache_folder = "twitter_cache/";
+
+	/**
+	* List of possible HTTP error response codes from the Twitter API
+	* @var array
+	* @link http://apiwiki.twitter.com/REST+API+Documentation#HTTPStatusCodes
+	*/
+	public $errors = array(400,401,403,404,500,502,503);
 	
 	/**
 	 * Twitter account username.
@@ -100,6 +102,8 @@ class Twitee{
 	{
 		global $DB, $LANG, $OUT, $TMPL;
 		
+		$LANG->fetch_language_file('twitee');
+		
 		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
 		
 		$this->limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');
@@ -112,7 +116,7 @@ class Twitee{
 		}	
 		else
 		{		
-			return $OUT->show_user_error('general', array("You don't seem to have entered a twitter username and password. You can do this in the module settings."));
+			return $OUT->show_user_error('general', array($LANG->line('twitee_no_up')));
 		}
 
 	}
@@ -209,8 +213,10 @@ class Twitee{
 	}
 	
 	/**
-	* The heavy lifting - checks cache via _checkCache, makes request to API if necessary via _makeRequest
-	* updates cache if necessary via _updateCache and then parses data with the correct parser. 
+	* The heavy lifting - checks cache via {@link _checkCache()} makes request to API if necessary via {@link _makeRequest()}
+	* If an error code is found in the response headers this is handled by {@link _handleError()}
+	* If there is no error the function updates the cache if necessary via {@link _updateCache()} 
+	* and then parses data with the correct xml parser.
 	*
 	* @param string $filename the name of the cache file
 	* @param string $path the Twitter API path for this call
@@ -231,26 +237,156 @@ class Twitee{
 		{
 			$response = $this->_makeRequest($path, $this->format, $auth);	
 
-			if ($response->_metadata['http_code'] == 200)
+			if (!in_array($response->_metadata['http_code'], $this->errors)) 
 			{
 				$this->_updateCache($response->_data, $filename);
-				$xml = new SimpleXMLElement($response->_data);					
+				$xml = new SimpleXMLElement($response->_data);
 			}
+			else
+			{
+				return $this->_handleError($response);
+			}
+
 		}
 		switch($parser) 
 		{
 			case 'status':
-			return $this->_parse_status($xml);	
-			break;
+				return $this->_parse_status($xml);	
+				break;
 			case 'basic_user':
-			return $this->_parse_basic_user($xml);	
-			break;
+				return $this->_parse_basic_user($xml);	
+				break;
 		}
 		
 	}	
 	
-	
+	/**
+	* Gets data via a cURL request
+	*
+	* @param string $url The twitter URL. Used to build cURL request to Twitter API
+	* @param string $format The format of the outputed data e.g. xml, json, atom, rss
+	* @param bool $auth Sets whether the request should use authorisation or not.
+	* @param string $data Variable to contain returned data
+	* @see function updateCache()
+	* @return string Returns raw data from the Twitter API request
+	*/
+    protected function _makeRequest($url, $format = 'xml', $auth = false, $data = '')
+	  {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		
+		if($auth)
+		{
+			curl_setopt($ch, CURLOPT_USERPWD, "{$this->_authUsername}:{$this->_authPassword}");
+		}
+		
+		$data = curl_exec($ch);
+		$metadata = curl_getinfo($ch);
+		curl_close($ch);
+	
+		return $this->_lastResponse = new Twitee_response($data, $metadata, $format);			
+	  }
+	
+	/**
+	* Handles Error Response Codes from Twitter
+	*
+	* First an attempt is made to read a cache file
+	*
+	* @param array $response The response from the Twitter API
+	* @return string
+	*/
+	protected function _handleError($response)	
+	{		
+
+		global $LANG;
+		
+		$LANG->fetch_language_file('twitee');
+				
+		switch ($response->_metadata['http_code']) 
+		{
+			case 400:
+				return $LANG->line('twitee_error_400');
+			break;
+			case 401:
+				return $LANG->line('twitee_error_401');
+			break;
+			case 403:
+				return $LANG->line('twitee_error_403');
+			break;
+			case 404:
+				return $LANG->line('twitee_error_404');
+			break;
+			case 500:
+				return $LANG->line('twitee_error_500');
+			break;
+			case 502:
+				return $LANG->line('twitee_error_502');
+			break;
+			case 503:
+				return $LANG->line('twitee_error_503');
+			break;
+		}
+
+	}
+	
+	/**
+	* Checks whether the cache is stale
+	*
+	* @param string $filename The filename of the cache file
+	* @return bool Returns TRUE if cache is stale
+	*/	
+	protected function _checkCache($filename)
+	{
+		$last_modified = filemtime(PATH_CACHE . $this->cache_folder . $filename .'.'. $this->format); 
+		
+		if (time() - $this->refresh > $last_modified)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}		
+	}
+		
+	/**
+	* Updates the cache
+	*
+	* Fails silently if it is not able to create cache folder/file or if these are unwritable
+	*
+	* @param string $data The data to be written to the cache
+	* @param string $filename The filename for the cache file
+	* @return null
+	*/
+	protected function _updateCache($data, $filename)	
+	{		
+		$cache_dir  = PATH_CACHE. $this->cache_folder;				
+		$cache_file = $cache_dir . $filename .'.'. $this->format;
+						
+		if ( ! @is_dir($cache_dir))
+		{
+			if ( ! @mkdir($cache_dir, 0777))
+			{
+				return FALSE;
+			}
+			@chmod($cache_dir, 0777);            
+		}	
+		
+		if ( ! $fp = @fopen($cache_file, 'wb'))
+		{
+			return FALSE;
+		}
+		
+		flock($fp, LOCK_EX);
+		fwrite($fp, $data);
+		flock($fp, LOCK_UN);
+		fclose($fp);
+		@chmod($cache_file, 0777);
+		
+		return;		
+	}
+
 	/**
 	* Parses XML and returns as ExpressionEngine variables for the status XML schema
 	*
@@ -352,91 +488,7 @@ class Twitee{
 		$count++;
 		
 	}
-	
-	/**
-	* Gets data via a cURL request
-	*
-	* @param string $url The twitter URL. Used to build cURL request to Twitter API
-	* @param string $format The format of the outputed data e.g. xml, json, atom, rss
-	* @param bool $auth Sets whether the request should use authorisation or not.
-	* @param string $data Variable to contain returned data
-	* @see function updateCache()
-	* @return string Returns raw data from the Twitter API request
-	*/
-    protected function _makeRequest($url, $format = 'xml', $auth = false, $data = '')
-	  {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		
-		if($auth)
-		{
-			curl_setopt($ch, CURLOPT_USERPWD, "{$this->_authUsername}:{$this->_authPassword}");
-		}
-		
-		$data = curl_exec($ch);
-		$metadata = curl_getinfo($ch);
-		curl_close($ch);
-	
-		return $this->_lastResponse = new Twitee_response($data, $metadata, $format);			
-	  }
-	
-	/**
-	* Checks whether the cache is stale
-	*
-	* @param string $filename The filename of the cache file
-	* @return bool Returns TRUE if cache is stale
-	*/	
-	protected function _checkCache($filename)
-	{
-		$last_modified = filemtime(PATH_CACHE . $this->cache_folder . $filename .'.'. $this->format); 
-		
-		if (time() - $this->refresh > $last_modified)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}		
-	}
-		
-	/**
-	* Updates the cache
-	*
-	* Fails silently if it is not able to create cache folder/file or if these are unwritable
-	*
-	* @param string $data The data to be written to the cache
-	* @param string $filename The filename for the cache file
-	* @return null
-	*/
-	protected function _updateCache($data, $filename)	
-	{		
-		$cache_dir  = PATH_CACHE. $this->cache_folder;				
-		$cache_file = $cache_dir . $filename .'.'. $this->format;
-						
-		if ( ! @is_dir($cache_dir))
-		{
-			if ( ! @mkdir($cache_dir, 0777))
-			{
-				return FALSE;
-			}
-			@chmod($cache_dir, 0777);            
-		}	
-		
-		if ( ! $fp = @fopen($cache_file, 'wb'))
-		{
-			return FALSE;
-		}
-		
-		flock($fp, LOCK_EX);
-		fwrite($fp, $data);
-		flock($fp, LOCK_UN);
-		fclose($fp);
-		@chmod($cache_file, 0777);
-		
-		return;		
-	}
+
 		
 }
 
