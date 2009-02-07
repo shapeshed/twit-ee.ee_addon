@@ -91,7 +91,7 @@ Returns the authenticating user's followers, each with current status inline.  T
 
 ### Limit ###
 
-	limit=5
+	limit=10
 	
 Limits the number of results returned. Default - 10
 
@@ -154,14 +154,6 @@ Friends, Followers
 			{in_reply_to_user_id}
 			{favorited}
 			{in_reply_to_screen_name}
-	
-## Examples ##
-
-To be done..	
-	
-## See also ##
-
-To be done
 	
 ## License ##
 
