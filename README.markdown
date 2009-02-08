@@ -165,19 +165,19 @@ Friends, Followers
 
 Show the latest 5 tweets from the public timeline with a cache time of five minutes
 
-{exp:twitee:public_timeline refresh="5" limit="10"}
-{if count == 1}<ul>{/if}
-	<li>{text}</li>
-{if count == total_results}</ul>{/if}
-{/exp:twitee:public_timeline}
+	{exp:twitee:public_timeline refresh="5" limit="10"}
+	{if count == 1}<ul>{/if}
+		<li>{text}</li>
+	{if count == total_results}</ul>{/if}
+	{/exp:twitee:public_timeline}
 
 Show the latest 10 tweets from your favorites with a cache time of 30 minutes
 
-{exp:twitee:favorites refresh="30" limit="10"}
-{if count == 1}<ul>{/if}
-	<li>{text}</li>
-{if count == total_results}</ul>{/if}
-{/exp:twitee:favorites}
+	{exp:twitee:favorites refresh="30" limit="10"}
+	{if count == 1}<ul>{/if}
+		<li>{text}</li>
+	{if count == total_results}</ul>{/if}
+	{/exp:twitee:favorites}
 
 
 ## See also ##
