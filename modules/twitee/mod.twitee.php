@@ -143,7 +143,7 @@ class Twitee{
 	*/
 	public function public_timeline() 
 	{				
-		return $this->_get_data("public_timeline", self::PATH_STATUS_PUBLIC, false, "status" );		
+		return $this->_getData("public_timeline", self::PATH_STATUS_PUBLIC, false, "status" );		
 	}
 	
 	/**
@@ -154,7 +154,7 @@ class Twitee{
 	*/
 	public function friends_timeline() 
 	{   
-		return $this->_get_data("friends_timeline", self::PATH_STATUS_FRIENDS, true, "status" );
+		return $this->_getData("friends_timeline", self::PATH_STATUS_FRIENDS, true, "status" );
 	}
 	
 	/**
@@ -165,7 +165,7 @@ class Twitee{
 	*/
 	public function user_timeline() 
 	{
-		return $this->_get_data("user_timeline", self::PATH_STATUS_USER, true, "status" );	
+		return $this->_getData("user_timeline", self::PATH_STATUS_USER, true, "status" );	
 	}
 	
 	/**
@@ -176,7 +176,7 @@ class Twitee{
 	*/
 	function replies() 
 	{
-		return $this->_getData('replies', self::PATH_STATUS_REPLIES, true, 'status');
+		return $this->_getData("replies", self::PATH_STATUS_REPLIES, true, "status");
 	}
 	
 	/**
@@ -187,7 +187,7 @@ class Twitee{
 	*/
 	public function friends() 
 	{		
-		return $this->_getData('friends', self::PATH_USER_FRIENDS, true, 'basic_user');
+		return $this->_getData("friends", self::PATH_USER_FRIENDS, true, "basic_user");
 	}
 	
 	/**
@@ -198,7 +198,7 @@ class Twitee{
 	*/
 	public function followers() 
 	{		
-		return $this->_getData('followers', self::PATH_USER_FOLLOWERS, true, 'basic_user');
+		return $this->_getData("followers", self::PATH_USER_FOLLOWERS, true, "basic_user");
 	}
 	
 	/**
@@ -209,7 +209,7 @@ class Twitee{
 	*/
 	public function favorites() 
 	{		
-		return $this->getData('favorites', self::PATH_FAV_FAVORITES, true, 'status');
+		return $this->_getData("favorites", self::PATH_FAV_FAVORITES, true, "status");
 	}
 	
 	/**
@@ -225,7 +225,7 @@ class Twitee{
 	* @see getData
 	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/	
-	protected function _get_data($filename, $path, $auth, $parser)
+	protected function _getData($filename, $path, $auth, $parser)
 	{
 		if (!$this->_checkCache($filename))
 		{
@@ -487,11 +487,11 @@ class Twitee{
 			}
 			
 		$this->return_data .= $tagdata;
-		
+		$count++;
+				
 		}
 		
 		return $this->return_data;	
-		$count++;
 		
 	}
 
