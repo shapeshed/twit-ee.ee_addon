@@ -106,9 +106,6 @@ The number of minutes between cache refreshes. Default - 5 minutes.
 ### For Status methods ###
 
 Public Timeline, Friends Timeline, User Timeline, Replies and Favorites
-
-	{count}
-	{total_results}
 	
 	Status
 		{created_at}
@@ -131,8 +128,8 @@ Public Timeline, Friends Timeline, User Timeline, Replies and Favorites
 			{protected}
 			{followers_count}
 			
-		{count}
-		{total_results}
+	{count}
+	{total_results}
 
 
 ### For Basic user methods ###
@@ -161,8 +158,8 @@ Friends, Followers
 			{favorited}
 			{in_reply_to_screen_name}
 			
-			{count}
-			{total_results}
+	{count}
+	{total_results}
 
 ## Examples ##
 
