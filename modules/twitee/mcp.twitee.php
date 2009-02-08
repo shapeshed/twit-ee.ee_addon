@@ -9,7 +9,7 @@
  *
  * Fetches data from Twitter for display in templates
  *
- * @version    0.8
+ * @version    Beta 1
  * @author     George Ornbo <george@shapeshed.com>
  * @license    http://opensource.org/licenses/bsd-license.php
  */
@@ -27,7 +27,7 @@ class Twitee_CP {
 	* Version number of the module
 	* @var string
 	*/
-    var $version        = '0.8';
+    var $version        = 'Beta 1';
 
 	/**
 	* Settings used in this module
