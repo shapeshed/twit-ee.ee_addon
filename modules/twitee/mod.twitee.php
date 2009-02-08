@@ -165,7 +165,7 @@ class Twitee{
 	*/
 	public function user_timeline() 
 	{
-		return $this->_get_data("friends_timeline", self::PATH_STATUS_USER, true, "status" );	
+		return $this->_get_data("user_timeline", self::PATH_STATUS_USER, true, "status" );	
 	}
 	
 	/**
@@ -176,7 +176,7 @@ class Twitee{
 	*/
 	function replies() 
 	{
-		return $this->_getData('friends_timeline', self::PATH_STATUS_REPLIES, true, 'status');
+		return $this->_getData('replies', self::PATH_STATUS_REPLIES, true, 'status');
 	}
 	
 	/**
