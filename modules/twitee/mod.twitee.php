@@ -405,7 +405,10 @@ class Twitee{
 			if($count == $this->limit)
 			{
 				break;
-			}			
+			}
+			
+			$status->count = $count+1;		
+			$status->total_results = $this->limit;		
 			
 			$tagdata = $TMPL->tagdata;
 			
@@ -457,6 +460,9 @@ class Twitee{
 			{
 				break;
 			}
+			
+			$status->count = $count+1;		
+			$status->total_results = $this->limit;
 			
 			$tagdata = $TMPL->tagdata;
 			

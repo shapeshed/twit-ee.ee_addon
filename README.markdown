@@ -14,9 +14,9 @@
 * Copy the /modules/twitee folder to your /system/modules/ folder
 * Copy the /language/english/lang.twitee.php file to your /system/languages/english folder
 * Open the [Module Manager](http://www.expressionengine.com/index.php?affiliate=shapeshed&page=/docs/cp/modules/index.html)
-* Ensure that your /system/cache/ folder is writable
 * Install the Twit-ee module
 * In the module enter your Twitter username and password 
+* Ensure that your /system/cache/ folder is writable
 
 ## Name
 
@@ -91,13 +91,13 @@ Returns the authenticating user's followers, each with current status inline.  T
 
 ### Limit ###
 
-	limit=10
+	limit="10"
 	
 Limits the number of results returned. Default - 10
 
 ### Refresh ###
 
-	refresh=5
+	refresh="5"
 	
 The number of minutes between cache refreshes. Default - 5 minutes.
 
@@ -107,6 +107,9 @@ The number of minutes between cache refreshes. Default - 5 minutes.
 
 Public Timeline, Friends Timeline, User Timeline, Replies and Favorites
 
+	{count}
+	{total_results}
+	
 	Status
 		{created_at}
 		{id}
@@ -127,12 +130,15 @@ Public Timeline, Friends Timeline, User Timeline, Replies and Favorites
 			{url}
 			{protected}
 			{followers_count}
+			
+		{count}
+		{total_results}
 
 
 ### For Basic user methods ###
 
 Friends, Followers
-
+	
 	User
 		{id}
 		{name}
@@ -154,6 +160,33 @@ Friends, Followers
 			{in_reply_to_user_id}
 			{favorited}
 			{in_reply_to_screen_name}
+			
+			{count}
+			{total_results}
+
+## Examples ##
+
+Show the latest 5 tweets from the public timeline with a cache time of five minutes
+
+{exp:twitee:public_timeline refresh="5" limit="10"}
+{if count == 1}<ul>{/if}
+	<li>{text}</li>
+{if count == total_results}</ul>{/if}
+{/exp:twitee:public_timeline}
+
+Show the latest 10 tweets from your favorites with a cache time of 30 minutes
+
+{exp:twitee:favorites refresh="30" limit="10"}
+{if count == 1}<ul>{/if}
+	<li>{text}</li>
+{if count == total_results}</ul>{/if}
+{/exp:twitee:favorites}
+
+
+## See also ##
+
+* [Twitter REST API Documentation](http://apiwiki.twitter.com/REST+API+Documentation)
+* [Github][]
 	
 ## License ##
 

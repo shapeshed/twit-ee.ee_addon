@@ -38,7 +38,6 @@ class Twitee_CP {
 	/**
 	* Constructor - decides which function to show based on URL
 	*
-	* @param  bool $switch Twitter account username
 	*/	
 	function Twitee_CP( $switch = TRUE )
 		{
@@ -89,7 +88,6 @@ class Twitee_CP {
 	/**
 	* Module homepage - not currently used but will be needed for OAuth
 	*
-	* @param  bool $switch Twitter account username
 	*/
 	function twitee_home()
 	{
@@ -114,7 +112,11 @@ class Twitee_CP {
 		                                                                  5));
 
 	}
-
+	
+	/**
+	* Settings form
+	*
+	*/
 	function settings_form($response)
 	{
 		global $DB, $DSP, $LANG, $IN, $PREFS;
@@ -187,6 +189,10 @@ class Twitee_CP {
 					
 	}
 
+	/**
+	* Update account
+	*
+	*/
     function update_account()
     {
 		global $DB, $DSP, $IN, $LANG;
