@@ -13,7 +13,7 @@
 
 Twit-ee is free for personal and donationware for commercial use. 
 
-For commercial use a donation of $5 is suggested. You can send [donations here][http://pledgie.org/campaigns/2898]. 
+For commercial use a donation of $10 is suggested. You can send [donations here](http://pledgie.org/campaigns/2898). 
 
 Twit-ee is licensed under a [Open Source Initiative - BSD License][] license.
 
