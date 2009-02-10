@@ -7,7 +7,7 @@
  * 
  * This class is derived from {@link http://code.google.com/p/arc90-service-twitter/ Arc90_Service_Twitter} 
  *
- * @version    0.8
+ * @version    1.0.0
  * @author     George Ornbo <george@shapeshed.com>
  * @license    {@link http://opensource.org/licenses/bsd-license.php BSD License}
  */

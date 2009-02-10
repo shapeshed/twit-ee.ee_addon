@@ -9,6 +9,14 @@
 * PHP 5.x.x
 * cURL support
 
+## License ##
+
+Twit-ee is free for personal and donationware for commercial use. 
+
+For commercial use a donation of $5 is suggested. You can send [donations here][http://pledgie.org/campaigns/2898]. 
+
+Twit-ee is licensed under a [Open Source Initiative - BSD License][] license.
+
 ## Installation
 
 * Copy the /modules/twitee folder to your /system/modules/ folder
@@ -185,10 +193,6 @@ Show the latest 10 tweets from your favorites with a cache time of 30 minutes
 * [Twitter REST API Documentation](http://apiwiki.twitter.com/REST+API+Documentation)
 * [Github][]
 	
-## License ##
-
-Twit-ee is licensed under a [Open Source Initiative - BSD License][] license.
-
 ---
 This file is written using the MarkDown syntax. It may or may not have been parsed. If you are having trouble reading it try running the contents through http://daringfireball.net/projects/markdown/dingus.
 
