@@ -117,7 +117,7 @@ class Twitee_CP {
 	* Settings form
 	*
 	*/
-	function settings_form($response)
+	function settings_form($response="")
 	{
 		global $DB, $DSP, $LANG, $IN, $PREFS;
 		
@@ -138,12 +138,12 @@ class Twitee_CP {
 		
 		$DSP->body .= $DSP->heading($LANG->line('twitee_account_details'));
 		
-		if($response['success'])
+		if(!empty($response['success']))
 		{
 			$DSP->body .= $response['success'];	
 		}
 		
-		if($response['create_success'])
+		if(!empty($response['create_success']))
 		{
 			$DSP->body .= $response['create_success'];	
 		}
