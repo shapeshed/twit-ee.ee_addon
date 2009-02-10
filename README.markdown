@@ -11,11 +11,11 @@
 
 ## License ##
 
-Twit-ee is free for personal and donationware for commercial use. 
+Twit-ee is free for personal and commercial use. 
 
-For commercial use a donation of $10 is suggested. You can send [donations here](http://pledgie.org/campaigns/2898). 
+If you use it commercially use a donation of $10 is suggested. You can send [donations here](http://pledgie.org/campaigns/2898). 
 
-Twit-ee is licensed under a [Open Source Initiative - BSD License][] license.
+Twit-ee is licensed under a [Open Source Initiative - BSD License][] license. I encourage other to fork the code and enhance it. 
 
 ## Installation
 
