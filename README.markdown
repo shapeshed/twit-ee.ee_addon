@@ -1,6 +1,6 @@
 # Twit-ee - Show data from Twitter API in ExpressionEngine templates #
 
-* **Author**: [George Ornbo][]
+* **Author(s)**: [George Ornbo][]
 * **Source Code**: [Github][]
 
 ## Compatibility
@@ -15,7 +15,7 @@ Twit-ee is free for personal and commercial use.
 
 If you use it commercially use a donation of $10 is suggested. You can send [donations here](http://pledgie.org/campaigns/2898). 
 
-Twit-ee is licensed under a [Open Source Initiative - BSD License][] license. I encourage other to fork the code and enhance it. 
+Twit-ee is licensed under a [Open Source Initiative - BSD License][] license. I encourage others to fork the code and enhance it. 
 
 ## Installation
 

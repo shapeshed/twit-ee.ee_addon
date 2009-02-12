@@ -59,3 +59,4 @@ class Twitee_response extends Twitee
         $this->_format   = $format;
     }
 }
+?>
