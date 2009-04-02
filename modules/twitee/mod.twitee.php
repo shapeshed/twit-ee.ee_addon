@@ -7,7 +7,7 @@
  * 
  * This class is derived from {@link http://code.google.com/p/arc90-service-twitter/ Arc90_Service_Twitter} 
  *
- * @version    1.0.1
+ * @version    1.0.2
  * @author     George Ornbo <george@shapeshed.com>
  * @license    {@link http://opensource.org/licenses/bsd-license.php BSD License}
  */
@@ -338,15 +338,26 @@ class Twitee{
 	*/	
 	protected function _checkCache($filename)
 	{
-		$last_modified = filemtime(PATH_CACHE . $this->cache_folder . $filename .'.'. $this->format); 
 		
-		if (time() - $this->refresh > $last_modified)
+		$cache_file = PATH_CACHE . $this->cache_folder . $filename .'.'. $this->format;
+				
+		if (!file_exists($cache_file)) 
 		{
-			return true;
-		}
+		    return TRUE;
+		}		
+		
 		else
 		{
-			return false;
+			$last_modified = filemtime($cache_file); 
+					
+			if (time() - $this->refresh > $last_modified)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}		
 	}
 		
