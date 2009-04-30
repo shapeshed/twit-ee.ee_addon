@@ -25,6 +25,7 @@ Twit-ee is licensed under a [Open Source Initiative - BSD License][] license. I 
 * Install the Twit-ee module
 * In the module enter your Twitter username and password 
 * Ensure that your /system/cache/ folder is writable
+* Twit-ee is MSM compatible so you can have a separate twitter account for each site
 
 ## Name
 
@@ -108,6 +109,12 @@ Limits the number of results returned. Default - 10
 	refresh="5"
 	
 The number of minutes between cache refreshes. Default - 5 minutes.
+
+### Site ID ###
+
+	site_id="1"
+	
+Allows you to show data from another MSM enabled site. Default - the current site id.
 
 ## Single Variables ##
 

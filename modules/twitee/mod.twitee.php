@@ -7,7 +7,7 @@
  * 
  * This class is derived from {@link http://code.google.com/p/arc90-service-twitter/ Arc90_Service_Twitter} 
  *
- * @version    1.0.2
+ * @version    1.1
  * @author     George Ornbo <george@shapeshed.com>
  * @license    {@link http://opensource.org/licenses/bsd-license.php BSD License}
  */
@@ -56,6 +56,20 @@ class Twitee{
 	public $limit = "";
 	
 	/**
+	* Sets the site id
+	* @see __construct
+	* @var integer
+	*/	
+	public $site_id = "";
+	
+	/**
+	* Sets the account id
+	* @see __construct
+	* @var integer
+	*/	
+	public $account_id = "";
+	
+	/**
 	* Sets the data format of the response
 	* @var string
 	*/
@@ -100,19 +114,22 @@ class Twitee{
 	*/
 	public function __construct($username =null, $password =null)
 	{
-		global $DB, $LANG, $OUT, $TMPL;
-		
+		global $DB, $LANG, $OUT, $TMPL, $PREFS;
+			
 		$LANG->fetch_language_file('twitee');
 		
 		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
 		
 		$this->limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');
 		
-		$query = $DB->query("SELECT * FROM exp_twitee LIMIT 0,1");
+		$this->site_id = ( ! $TMPL->fetch_param('site_id')) ? $PREFS->ini('site_id') : $TMPL->fetch_param('site_id');
+		
+		$query = $DB->query("SELECT * FROM exp_twitee WHERE site_id = ".$this->site_id." LIMIT 0,1 ");
 
 		if ($query->num_rows != 0)
 		{		
 	    	$this->setAuth($query->result[0]['username'], str_rot13($query->result[0]['password']));
+			$this->account_id = $query->result[0]['account_id'];
 		}	
 		else
 		{		
@@ -154,7 +171,7 @@ class Twitee{
 	*/
 	public function friends_timeline() 
 	{   
-		return $this->_getData("friends_timeline", self::PATH_STATUS_FRIENDS, true, "status" );
+		return $this->_getData($this->account_id."_friends_timeline", self::PATH_STATUS_FRIENDS, true, "status" );
 	}
 	
 	/**
@@ -165,7 +182,7 @@ class Twitee{
 	*/
 	public function user_timeline() 
 	{
-		return $this->_getData("user_timeline", self::PATH_STATUS_USER, true, "status" );	
+		return $this->_getData($this->account_id."_user_timeline", self::PATH_STATUS_USER, true, "status" );	
 	}
 	
 	/**
@@ -176,7 +193,7 @@ class Twitee{
 	*/
 	function replies() 
 	{
-		return $this->_getData("replies", self::PATH_STATUS_REPLIES, true, "status");
+		return $this->_getData($this->account_id."_replies", self::PATH_STATUS_REPLIES, true, "status");
 	}
 	
 	/**
@@ -187,7 +204,7 @@ class Twitee{
 	*/
 	public function friends() 
 	{		
-		return $this->_getData("friends", self::PATH_USER_FRIENDS, true, "basic_user");
+		return $this->_getData($this->account_id."_friends", self::PATH_USER_FRIENDS, true, "basic_user");
 	}
 	
 	/**
@@ -198,7 +215,7 @@ class Twitee{
 	*/
 	public function followers() 
 	{		
-		return $this->_getData("followers", self::PATH_USER_FOLLOWERS, true, "basic_user");
+		return $this->_getData($this->account_id."_followers", self::PATH_USER_FOLLOWERS, true, "basic_user");
 	}
 	
 	/**
@@ -209,7 +226,7 @@ class Twitee{
 	*/
 	public function favorites() 
 	{		
-		return $this->_getData("favorites", self::PATH_FAV_FAVORITES, true, "status");
+		return $this->_getData($this->account_id."_favorites", self::PATH_FAV_FAVORITES, true, "status");
 	}
 	
 	/**

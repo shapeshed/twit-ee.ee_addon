@@ -9,7 +9,7 @@
  *
  * Fetches data from Twitter for display in templates
  *
- * @version    1.0.2
+ * @version    1.1
  * @author     George Ornbo <george@shapeshed.com>
  * @license    http://opensource.org/licenses/bsd-license.php
  */
@@ -65,11 +65,11 @@ class Twitee_CP {
 	*/
 	function get_settings()
 	{
-		global $DB;
+		global $DB, $PREFS;
 		
 		$settings = FALSE;
 		
-		$query = $DB->query("SELECT * FROM exp_twitee LIMIT 1");
+		$query = $DB->query("SELECT * FROM exp_twitee WHERE site_id = ".$PREFS->ini('site_id')." LIMIT 1");
 			
 		if ($query->num_rows > 0)
 		{
@@ -195,7 +195,7 @@ class Twitee_CP {
 	*/
     function update_account()
     {
-		global $DB, $DSP, $IN, $LANG;
+		global $DB, $DSP, $IN, $LANG, $PREFS;
 		
 		if ( ! $IN->GBL('twitter_username', 'POST') )
 		{
@@ -218,9 +218,10 @@ class Twitee_CP {
 			*/
 			
 			$data = array(	'username' 	=> $IN->GBL('twitter_username', 'POST'),
-							'password'	=> str_rot13($IN->GBL('twitter_password', 'POST')));
+							'password'	=> str_rot13($IN->GBL('twitter_password', 'POST')),
+							'site_id'	=> $PREFS->ini('site_id'));
 							
-			$query = $DB->query("SELECT * FROM exp_twitee LIMIT 0,1");
+			$query = $DB->query("SELECT * FROM exp_twitee WHERE site_id = ".$PREFS->ini('site_id')." LIMIT 0,1");
 			
 			if ($query->num_rows == 0)
 			{
@@ -266,6 +267,7 @@ class Twitee_CP {
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_twitee` (
 								`account_id` int(10) unsigned NOT NULL auto_increment,
+								`site_id` int(10) unsigned NOT NULL,
 								`username` varchar(50) NOT NULL,
 								`password` varchar(40) NOT NULL,
 								PRIMARY KEY (`account_id`));";
