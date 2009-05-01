@@ -7,7 +7,7 @@
  * 
  * This class is derived from {@link http://code.google.com/p/arc90-service-twitter/ Arc90_Service_Twitter} 
  *
- * @version    1.1
+ * @version    1.15
  * @author     George Ornbo <george@shapeshed.com>
  * @license    {@link http://opensource.org/licenses/bsd-license.php BSD License}
  */
@@ -430,6 +430,8 @@ class Twitee{
 		foreach ($xml->status as $status)
 		{
 			
+			$status->text = $this->twitterStatusUrlConverter($status->text);
+			
 			if($count == $this->limit)
 			{
 				break;
@@ -450,6 +452,7 @@ class Twitee{
 				
 			foreach ($status->user as $user)
 			{
+
 				foreach ($TMPL->var_single as $key => $val)
 				{
 					if (isset($user->$val))
@@ -483,6 +486,8 @@ class Twitee{
 		
 		foreach ($xml->user as $user)		
 		{
+
+			$user->status->text = $this->twitterStatusUrlConverter($user->status->text);
 			
 			if($count == $this->limit)
 			{
@@ -496,6 +501,7 @@ class Twitee{
 			
 			foreach ($TMPL->var_single as $key => $val)
 			{
+				
 				if (isset($user->$val))
 				{
 				$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
@@ -503,16 +509,20 @@ class Twitee{
 			}
 				
 			foreach ($user->status as $status)
-			{
-				foreach ($TMPL->var_single as $key => $val)
+			{				
+								
+				foreach ($TMPL->var_single as $key => $val)				
+				
 				{
+					
 					if (isset($status->$val))
 					{
 					$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
+					
 					}
 				}
 				
-			}
+			}		
 			
 		$this->return_data .= $tagdata;
 		$count++;
@@ -521,6 +531,41 @@ class Twitee{
 		
 		return $this->return_data;	
 		
+	}
+	
+	/**
+	*
+	* twitterStatusUrlConverter
+	*
+	* To convert links on a twitter status to a clickable url. Also convert @ to follow link, and # to search
+	*
+	* @author: Mardix - http://mardix.wordpress.com, http://www.givemebeats.net
+	* @date: March 16 2009
+	* @license: LGPL (I don't care, it's free lol)
+	*
+	* @param string : the status
+	* @param bool : true|false, allow target _blank
+	* @param int : to truncate a link to max length
+	* @return String
+	*
+	* */
+	function twitterStatusUrlConverter($status,$targetBlank=false,$linkMaxLen=250)
+	{
+		// The target
+		$target=$targetBlank ? " target=\"_blank\" " : "";
+
+		// convert link to url
+		$status = preg_replace("/((http:\/\/|https:\/\/)[^ )
+		]+)/e", "'<a href=\"$1\"$target>'. ((strlen('$1')>=$linkMaxLen ? substr('$1',0,$linkMaxLen).'...':'$1')).'</a>'", $status);
+
+		// convert @ to follow
+		$status = preg_replace("/(@([_a-z0-9\-]+))/i","<a href=\"http://twitter.com/$2\" title=\"Follow $2\"$target>$1</a>",$status);
+
+		// convert # to search
+		$status = preg_replace("/(#([_a-z0-9\-]+))/i","<a href=\"http://search.twitter.com/search?q=%23$2\" title=\"Search $1\"$target>$1</a>",$status);
+
+		// return the status
+		return $status;
 	}
 
 		
