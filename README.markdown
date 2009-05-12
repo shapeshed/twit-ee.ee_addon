@@ -1,6 +1,6 @@
 # Twit-ee - Show data from Twitter API in ExpressionEngine templates #
 
-* **Author(s)**: [George Ornbo][]
+* **Author.(s)**: [George Ornbo][]
 * **Source Code**: [Github][]
 
 ## Compatibility
