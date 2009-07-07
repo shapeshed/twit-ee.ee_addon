@@ -116,6 +116,36 @@ The number of minutes between cache refreshes. Default - 5 minutes.
 	
 Allows you to show data from another MSM enabled site. Default - the current site id.
 
+### Site ID ###
+
+	site_id="1"
+	
+Allows you to show data from another MSM enabled site. Default - the current site id.
+
+### Convert URLs into links ###
+
+	convert_urls="n"
+	
+Convert urls in the tweet into anchors. Default - "y"
+
+### Convert @usernames into links ###
+
+	convert_usernames="n"
+	
+Convert @username in the tweet into anchors that point to the users profile. Default - "y"
+
+### Convert #hastags into links ###
+
+	convert_hash_tags="n"
+	
+Convert #hashtags in the tweet into anchors that point to search.twitter.com. Default - "y"
+
+### Capitalise the first letter of the relative time ###
+
+	ucfirst_relative_time="y"
+	
+Changes the first letter of the relative time to uppercase. Default - "n"
+
 ## Single Variables ##
 
 ### For Status methods ###

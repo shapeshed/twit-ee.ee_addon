@@ -17,6 +17,13 @@
  */
 require_once PATH_MOD.'twitee/mod_twitee_response.php';
  
+define("SECOND", 1);
+define("MINUTE", 60 * SECOND);
+define("HOUR", 60 * MINUTE);
+define("DAY", 24 * HOUR);
+define("MONTH", 30 * DAY);
+
+
 /**
  * Twit-ee module
  *
@@ -105,6 +112,27 @@ class Twitee{
      * @var string
      */
     protected $_lastResponse =null;
+
+    /**
+     * Convert links in statuses.
+ 	 * Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au)
+     * @var boolean
+     */
+    protected $convert_urls = "y";
+
+    /**
+     * Convert @user to profile links in statuses.
+ 	 * Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au)
+     * @var boolean
+     */
+    protected $convert_usernames = "y";
+
+    /**
+     * Convert #hashtags to search.twitter.com links in statuses.
+     * Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au)
+     * @var boolean
+     */
+    protected $convert_hash_tags = "y";
 	
 	/**
 	* Constructs a new Twitter Web Service Client and gets template variables
@@ -119,20 +147,23 @@ class Twitee{
 		$LANG->fetch_language_file('twitee');
 		
 		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
-		
 		$this->limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');
-		
 		$this->site_id = ( ! $TMPL->fetch_param('site_id')) ? $PREFS->ini('site_id') : $TMPL->fetch_param('site_id');
+
+		/* Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au) */
+		$this->convert_urls = ( ! $TMPL->fetch_param('convert_urls')) ? "y" : $TMPL->fetch_param('convert_urls');
+		$this->convert_usernames = ( ! $TMPL->fetch_param('convert_usernames')) ? "y" : $TMPL->fetch_param('convert_usernames');
+		$this->convert_hash_tags = ( ! $TMPL->fetch_param('convert_hash_tags')) ? "y" : $TMPL->fetch_param('convert_hash_tags');
 		
 		$query = $DB->query("SELECT * FROM exp_twitee WHERE site_id = ".$this->site_id." LIMIT 0,1 ");
 
 		if ($query->num_rows != 0)
-		{		
+		{
 	    	$this->setAuth($query->result[0]['username'], str_rot13($query->result[0]['password']));
 			$this->account_id = $query->result[0]['account_id'];
 		}	
 		else
-		{		
+		{
 			return $OUT->show_user_error('general', array($LANG->line('twitee_no_up')));
 		}
 
@@ -424,12 +455,9 @@ class Twitee{
 	protected function _parse_status($xml)
 	{
 		global $TMPL;
-				
 		$count = 0;
-		
 		foreach ($xml->status as $status)
 		{
-			
 			$status->text = $this->twitterStatusUrlConverter($status->text);
 			
 			if($count == $this->limit)
@@ -437,27 +465,35 @@ class Twitee{
 				break;
 			}
 			
-			$status->count = $count+1;		
-			$status->total_results = $this->limit;		
-			
+			$status->count = $count+1;
+			$status->total_results = $this->limit;
 			$tagdata = $TMPL->tagdata;
 			
 			foreach ($TMPL->var_single as $key => $val)
 			{
 				if (isset($status->$val))
 				{
-				$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
+					$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
+				}
+				/* Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au) */
+				elseif($val == "relative_time")
+				{
+					$relative_time = $this->_relativeTime(strtotime($status->created_at));
+					if($TMPL->fetch_param("ucfirst_relative_time") == "y")
+					{
+						$relative_time = ucfirst($relative_time);
+					}
+					$tagdata = $TMPL->swap_var_single("relative_time", $relative_time, $tagdata);
 				}
 			}
 				
 			foreach ($status->user as $user)
 			{
-
 				foreach ($TMPL->var_single as $key => $val)
 				{
 					if (isset($user->$val))
 					{
-					$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
+						$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
 					}
 				}
 				
@@ -471,7 +507,43 @@ class Twitee{
 		return $this->return_data;	
 		
 	}
-	
+
+	/*
+		Relative Time Function
+		based on code from http://stackoverflow.com/questions/11/how-do-i-calculate-relative-time/501415#501415
+		Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au)
+	*/
+	function _relativeTime($time)
+	{
+		global $LOC;
+		$delta = time() - $time;
+		if ($delta < 2 * MINUTE) {
+			return "just now";
+		}
+		if ($delta < 45 * MINUTE) {
+			return floor($delta / MINUTE) . " min ago";
+		}
+		if ($delta < 90 * MINUTE) {
+			return "1 hour ago";
+		}
+		if ($delta < 24 * HOUR) {
+			return floor($delta / HOUR) . " hours ago";
+		}
+		if ($delta < 48 * HOUR) {
+			return "yesterday";
+		}
+		if ($delta < 30 * DAY) {
+			return floor($delta / DAY) . " days ago";
+		}
+		if ($delta < 12 * MONTH) {
+			$months = floor($delta / DAY / 30);
+			return $months <= 1 ? "1 month ago" : $months . " months ago";
+		} else {
+			$years = floor($delta / DAY / 365);
+			return $years <= 1 ? "1 year ago" : $years . " years ago";
+		}
+	}
+
 	/**
 	* Parses XML and returns as ExpressionEngine variables for the Basic User xml schema
 	*
@@ -549,20 +621,29 @@ class Twitee{
 	* @return String
 	*
 	* */
-	function twitterStatusUrlConverter($status,$targetBlank=false,$linkMaxLen=250)
+	function twitterStatusUrlConverter($status, $which = "link", $relExternal = TRUE, $linkMaxLen = 250)
 	{
 		// The target
-		$target=$targetBlank ? " target=\"_blank\" " : "";
+		$rel = $relExternal ? " rel=\"extenal\" " : "";
 
-		// convert link to url
-		$status = preg_replace("/((http:\/\/|https:\/\/)[^ )
-		]+)/e", "'<a href=\"$1\"$target>'. ((strlen('$1')>=$linkMaxLen ? substr('$1',0,$linkMaxLen).'...':'$1')).'</a>'", $status);
+		if($this->convert_links == "y")
+		{
+			// convert link to url
+			$status = preg_replace("/((http:\/\/|https:\/\/)[^ )
+			]+)/e", "'<a href=\"$1\"$rel>'. ((strlen('$1')>=$linkMaxLen ? substr('$1',0,$linkMaxLen).'...':'$1')).'</a>'", $status);
+		}
+		
+		if($this->convert_usernames == "y")
+		{
+			// convert @ to follow
+			$status = preg_replace("/(@([_a-z0-9\-]+))/i","<a href=\"http://twitter.com/$2\" title=\"Follow $2\"$rel>$1</a>",$status);
+		}
 
-		// convert @ to follow
-		$status = preg_replace("/(@([_a-z0-9\-]+))/i","<a href=\"http://twitter.com/$2\" title=\"Follow $2\"$target>$1</a>",$status);
-
-		// convert # to search
-		$status = preg_replace("/(#([_a-z0-9\-]+))/i","<a href=\"http://search.twitter.com/search?q=%23$2\" title=\"Search $1\"$target>$1</a>",$status);
+		if($this->convert_hash_tags == "y")
+		{
+			// convert # to search
+			$status = preg_replace("/(#([_a-z0-9\-]+))/i","<a href=\"http://search.twitter.com/search?q=%23$2\" title=\"Search $1\"$rel>$1</a>",$status);
+		}
 
 		// return the status
 		return $status;
