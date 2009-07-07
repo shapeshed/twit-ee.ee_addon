@@ -116,12 +116,6 @@ The number of minutes between cache refreshes. Default - 5 minutes.
 	
 Allows you to show data from another MSM enabled site. Default - the current site id.
 
-### Site ID ###
-
-	site_id="1"
-	
-Allows you to show data from another MSM enabled site. Default - the current site id.
-
 ### Convert URLs into links ###
 
 	convert_urls="n"
