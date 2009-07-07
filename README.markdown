@@ -148,6 +148,7 @@ Public Timeline, Friends Timeline, User Timeline, Replies and Favorites
 	
 	Status
 		{created_at}
+		{relative_time}
 		{id}
 		{text}
 		{source}
