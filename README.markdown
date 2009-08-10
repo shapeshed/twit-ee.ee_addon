@@ -1,6 +1,6 @@
 # Twit-ee - Show data from Twitter API in ExpressionEngine templates #
 
-* **Author(s)**: [George Ornbo][]
+* **Author(s)**: [George Ornbo][], [Leevi Graham][]
 * **Source Code**: [Github][]
 
 ## Compatibility
@@ -229,6 +229,7 @@ Show the latest 10 tweets from your favorites with a cache time of 30 minutes
 This file is written using the MarkDown syntax. It may or may not have been parsed. If you are having trouble reading it try running the contents through http://daringfireball.net/projects/markdown/dingus.
 
 [George Ornbo]: http://shapeshed.com/
+[Leevi Graham]: http://leevigraham.com/
 [ExpressionEngine]:http://www.expressionengine.com/index.php?affiliate=shapeshed
 [Open Source Initiative - BSD License]: http://opensource.org/licenses/bsd-license.php
 [Github]: http://github.com/shapeshed/ss.twitee.ee_addon/
