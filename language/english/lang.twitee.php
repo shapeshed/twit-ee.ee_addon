@@ -40,7 +40,7 @@ $L = array(
 "You have successfully updated you twitter account details",
 
 "twitee_account_added" =>
-"You have successfully added you twitter account details",
+"You have successfully added your twitter account details",
 
 "twitee_no_up" =>
 "You don't seem to have set your Twitter username and password in the Twit-ee module. You can do this within the module settings.",
