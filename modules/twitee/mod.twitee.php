@@ -7,7 +7,7 @@
  * 
  * This class is derived from {@link http://code.google.com/p/arc90-service-twitter/ Arc90_Service_Twitter} 
  *
- * @version    1.15
+ * @version    1.3
  * @author     George Ornbo <george@shapeshed.com>
  * @license    {@link http://opensource.org/licenses/bsd-license.php BSD License}
  */
@@ -16,7 +16,7 @@
  * @see twitee_response
  */
 require_once PATH_MOD.'twitee/mod_twitee_response.php';
- 
+
 define("SECOND", 1);
 define("MINUTE", 60 * SECOND);
 define("HOUR", 60 * MINUTE);
@@ -35,12 +35,22 @@ class Twitee{
 	const API_URL				= 	'http://twitter.com';
 
 	const PATH_STATUS_PUBLIC	= 	'/statuses/public_timeline';
+	const PATH_STATUS_HOME		=	'/statuses/home_timeline';
 	const PATH_STATUS_FRIENDS	= 	'/statuses/friends_timeline';
 	const PATH_STATUS_USER		= 	'/statuses/user_timeline';
-	const PATH_STATUS_REPLIES	= 	'/statuses/replies';
+	const PATH_MENTIONS			= 	'/statuses/mentions';
+	const PATH_RETWEETED_BY_ME	= 	'/statuses/retweeted_by_me';
+	const PATH_RETWEETED_TO_ME	= 	'/statuses/retweeted_to_me';
+	const PATH_RETWEETS_OF_ME	= 	'/statuses/retweets_of_me';
 	const PATH_USER_FRIENDS		= 	'/statuses/friends';
 	const PATH_USER_FOLLOWERS	= 	'/statuses/followers';
 	const PATH_FAV_FAVORITES	= 	'/favorites';	
+	
+	/**
+	* Module version
+	* @var string
+	*/
+	var $version			= "1.3";
 	
 	/**
 	* Data sent back to calling function
@@ -87,6 +97,13 @@ class Twitee{
 	* @var string
 	*/
 	public $cache_folder = "twitter_cache/";
+	
+	/**
+	* Sets the number of seconds after which the module will timeout
+	* @see __construct
+	* @var integer
+	*/	
+	public $timeout = "";
 
 	/**
 	* List of possible HTTP error response codes from the Twitter API
@@ -149,6 +166,7 @@ class Twitee{
 		$this->refresh = ( ! $TMPL->fetch_param('refresh')) ? '300' : $TMPL->fetch_param('refresh') * 60;
 		$this->limit = ( ! $TMPL->fetch_param('limit')) ? '10' : $TMPL->fetch_param('limit');
 		$this->site_id = ( ! $TMPL->fetch_param('site_id')) ? $PREFS->ini('site_id') : $TMPL->fetch_param('site_id');
+		$this->timeout = ( ! $TMPL->fetch_param('timeout')) ? '1' : $TMPL->fetch_param('timeout');
 
 		/* Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au) */
 		$this->convert_urls = ( ! $TMPL->fetch_param('convert_urls')) ? "y" : $TMPL->fetch_param('convert_urls');
@@ -194,6 +212,17 @@ class Twitee{
 		return $this->_getData("public_timeline", self::PATH_STATUS_PUBLIC, false, "status" );		
 	}
 	
+	// /**
+	// * Returns Twitter Home Timeline
+	// *
+	// * @see _getData
+	// * @return string Returns parsed data from Twitter API ready for display in templates
+	// */
+	// public function home_timeline() 
+	// {				
+	// 	return $this->_getData("home_timeline", self::PATH_STATUS_HOME, true, "status" );		
+	// }
+	
 	/**
 	* Returns Twitter Friends Timeline
 	*
@@ -222,10 +251,43 @@ class Twitee{
 	* @see _getData
 	* @return string Returns parsed data from Twitter API ready for display in templates
 	*/
-	function replies() 
+	function mentions() 
 	{
-		return $this->_getData($this->account_id."_replies", self::PATH_STATUS_REPLIES, true, "status");
+		return $this->_getData($this->account_id."_mentions", self::PATH_MENTIONS, true, "status");
 	}
+	
+	// /**
+	// * Returns Twitter Retweets by the authenticated user
+	// *
+	// * @see _getData
+	// * @return string Returns parsed data from Twitter API ready for display in templates
+	// */
+	// function retweeted_by_me() 
+	// {
+	// 	return $this->_getData($this->account_id."_retweeted_by_me", self::PATH_RETWEETED_BY_ME, true, "status");
+	// }
+	
+	// /**
+	// * Returns Twitter Retweets to the authenticated user
+	// *
+	// * @see _getData
+	// * @return string Returns parsed data from Twitter API ready for display in templates
+	// */
+	// function retweeted_to_me() 
+	// {
+	// 	return $this->_getData($this->account_id."_retweeted_to_me", self::PATH_RETWEETED_TO_ME, true, "status");
+	// }
+	// 
+	// /**
+	// * Returns Twitter Retweets of the authenticated user
+	// *
+	// * @see _getData
+	// * @return string Returns parsed data from Twitter API ready for display in templates
+	// */
+	// function retweets_of_me() 
+	// {
+	// 	return $this->_getData($this->account_id."_retweets_of_me", self::PATH_RETWEETS_OF_ME, true, "status");
+	// }
 	
 	/**
 	* Returns Twitter Friends for the authenticated user
@@ -283,27 +345,63 @@ class Twitee{
 
 		else
 		{
-			$response = $this->_makeRequest($path, $this->format, $auth);	
-
-			if (!in_array($response->_metadata['http_code'], $this->errors)) 
+			$response = $this->_makeRequest($path, $this->format, $auth);
+						
+			/*********************************
+			* Handle the response
+			**********************************/
+			if($response)	
 			{
-				$this->_updateCache($response->_data, $filename);
-				$xml = new SimpleXMLElement($response->_data);
+				/*********************************
+				* HTTP response ok? Update the cache and prepare for parsing
+				**********************************/
+				if (!in_array($response->_metadata['http_code'], $this->errors)) 
+				{
+					$this->_updateCache($response->_data, $filename);
+					$xml = new SimpleXMLElement($response->_data);
+				}
+				else
+				{
+					/*********************************
+					* HTTP response not 200 so handle error
+					**********************************/
+					return $this->_handleError($response);
+				}
 			}
+			/*********************************
+			* No response so attempt to serve up cache file
+			**********************************/
 			else
 			{
-				return $this->_handleError($response);
+				$cache_file = PATH_CACHE . $this->cache_folder . $filename .'.'. $this->format;
+
+				if (file_exists($cache_file)) 
+				{
+				    $xml = simplexml_load_file($cache_file);
+				}
+				/*********************************
+				* No cache file so time for error message
+				**********************************/
+				else
+				{
+					global $LANG;
+					$LANG->fetch_language_file('twitee');
+					echo $LANG->line('twitee_down');
+				}
 			}
 
 		}
-		switch($parser) 
+		if (!empty($xml))
 		{
-			case 'status':
-				return $this->_parse_status($xml);	
-				break;
-			case 'basic_user':
-				return $this->_parse_basic_user($xml);	
-				break;
+			switch($parser) 
+			{
+				case 'status':
+					return $this->_parse_status($xml);	
+					break;
+				case 'basic_user':
+					return $this->_parse_basic_user($xml);	
+					break;
+			}
 		}
 		
 	}	
@@ -318,12 +416,12 @@ class Twitee{
 	* @see function updateCache()
 	* @return string Returns raw data from the Twitter API request
 	*/
-    protected function _makeRequest($url, $format = 'xml', $auth = false, $data = '')
+     protected function _makeRequest($url, $format = 'xml', $auth = false, $data = '')
 	  {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, self::API_URL . $url .'.'. $format);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		
+		curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$this->timeout);		
 		if($auth)
 		{
 			curl_setopt($ch, CURLOPT_USERPWD, "{$this->_authUsername}:{$this->_authPassword}");
@@ -332,8 +430,16 @@ class Twitee{
 		$data = curl_exec($ch);
 		$metadata = curl_getinfo($ch);
 		curl_close($ch);
-	
-		return $this->_lastResponse = new Twitee_response($data, $metadata, $format);			
+				
+		if(!empty($data))
+		{
+			return $this->_lastResponse = new Twitee_response($data, $metadata, $format);	
+		}
+		else
+		{
+			return false;
+		}
+				
 	  }
 	
 	/**
@@ -626,7 +732,7 @@ class Twitee{
 		// The target
 		$rel = $relExternal ? " rel=\"extenal\" " : "";
 
-		if($this->convert_links == "y")
+		if($this->convert_urls == "y")
 		{
 			// convert link to url
 			$status = preg_replace("/((http:\/\/|https:\/\/)[^ )
@@ -648,8 +754,7 @@ class Twitee{
 		// return the status
 		return $status;
 	}
-
-		
+			
 }
 
 ?>

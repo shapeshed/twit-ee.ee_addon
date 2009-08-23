@@ -66,6 +66,9 @@ $L = array(
 "twitee_error_503" =>
 "Oh dear - The Twitter servers are up, but are overloaded with requests. (Error 503)",
 
+"twitee_down" =>
+"Sorry, Twitter seems to be down.",
+
 //----------------------------------------
 
 // END

@@ -65,12 +65,12 @@ Returns the 20 most recent statuses posted from the authenticating user. It's al
 	{exp:twitee:user_timeline}
 	{/exp:twitee:user_timeline}
 
-#### Replies ####
+#### Mentions ####
 
-Returns the 20 most recent @replies (status updates prefixed with @username) for the authenticating user.
+Returns the 20 most recent mentions (status containing @username) for the authenticating user.
 	
-	{exp:twitee:replies}
-	{/exp:twitee:replies}
+	{exp:twitee:mentions}
+	{/exp:twitee:mentions}
 
 #### Favorites ####
 
