@@ -140,6 +140,12 @@ Convert #hashtags in the tweet into anchors that point to search.twitter.com. De
 	
 Changes the first letter of the relative time to uppercase. Default - "n"
 
+### Timeout ###
+
+	timeout="1"
+	
+The length of time Twit-ee can take establishing a connection to Twitter in seconds. Default - 1 second
+
 ## Single Variables ##
 
 ### For Status methods ###
