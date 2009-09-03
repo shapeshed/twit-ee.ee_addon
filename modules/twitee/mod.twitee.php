@@ -220,7 +220,7 @@ class Twitee{
 	*/
 	public function home_timeline() 
 	{				
-		return $this->_getData("home_timeline", self::PATH_STATUS_HOME, true, "status" );		
+		return $this->_getData($this->account_id."home_timeline", self::PATH_STATUS_HOME, true, "status" );		
 	}
 	
 	/**
