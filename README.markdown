@@ -51,6 +51,13 @@ Returns the 20 most recent statuses from non-protected users who have set a cust
 	{exp:twitee:public_timeline}
 	{/exp:twitee:public_timeline}
 	
+#### Home Timeline ####
+
+Returns the 20 most recent statuses, including retweets, posted by the authenticating user and that user's friends. This is the equivalent of /timeline/home on the Web.
+
+	{exp:twitee:home_timeline}
+	{/exp:twitee:home_timeline}
+	
 #### Friends Timeline ####
 
 Returns the 20 most recent statuses posted by the authenticating user and that user's friends. This is the equivalent of /home on the Web.

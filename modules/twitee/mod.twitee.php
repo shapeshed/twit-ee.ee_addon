@@ -212,16 +212,16 @@ class Twitee{
 		return $this->_getData("public_timeline", self::PATH_STATUS_PUBLIC, false, "status" );		
 	}
 	
-	// /**
-	// * Returns Twitter Home Timeline
-	// *
-	// * @see _getData
-	// * @return string Returns parsed data from Twitter API ready for display in templates
-	// */
-	// public function home_timeline() 
-	// {				
-	// 	return $this->_getData("home_timeline", self::PATH_STATUS_HOME, true, "status" );		
-	// }
+	/**
+	* Returns Twitter Home Timeline
+	*
+	* @see _getData
+	* @return string Returns parsed data from Twitter API ready for display in templates
+	*/
+	public function home_timeline() 
+	{				
+		return $this->_getData("home_timeline", self::PATH_STATUS_HOME, true, "status" );		
+	}
 	
 	/**
 	* Returns Twitter Friends Timeline
