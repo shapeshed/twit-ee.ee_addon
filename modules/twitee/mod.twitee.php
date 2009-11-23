@@ -32,7 +32,7 @@ define("MONTH", 30 * DAY);
  */
 class Twitee{
 				
-	const API_URL				= 	'http://twitter.com';
+	const API_URL				= 	'http://api.twitter.com/1';
 
 	const PATH_STATUS_PUBLIC	= 	'/statuses/public_timeline';
 	const PATH_STATUS_HOME		=	'/statuses/home_timeline';
@@ -256,38 +256,38 @@ class Twitee{
 		return $this->_getData($this->account_id."_mentions", self::PATH_MENTIONS, true, "status");
 	}
 	
-	// /**
-	// * Returns Twitter Retweets by the authenticated user
-	// *
-	// * @see _getData
-	// * @return string Returns parsed data from Twitter API ready for display in templates
-	// */
-	// function retweeted_by_me() 
-	// {
-	// 	return $this->_getData($this->account_id."_retweeted_by_me", self::PATH_RETWEETED_BY_ME, true, "status");
-	// }
-	
-	// /**
-	// * Returns Twitter Retweets to the authenticated user
-	// *
-	// * @see _getData
-	// * @return string Returns parsed data from Twitter API ready for display in templates
-	// */
-	// function retweeted_to_me() 
-	// {
-	// 	return $this->_getData($this->account_id."_retweeted_to_me", self::PATH_RETWEETED_TO_ME, true, "status");
-	// }
-	// 
-	// /**
-	// * Returns Twitter Retweets of the authenticated user
-	// *
-	// * @see _getData
-	// * @return string Returns parsed data from Twitter API ready for display in templates
-	// */
-	// function retweets_of_me() 
-	// {
-	// 	return $this->_getData($this->account_id."_retweets_of_me", self::PATH_RETWEETS_OF_ME, true, "status");
-	// }
+  /**
+  * Returns Twitter Retweets by the authenticated user
+  *
+  * @see _getData
+  * @return string Returns parsed data from Twitter API ready for display in templates
+  */
+  function retweeted_by_me() 
+  {
+    return $this->_getData($this->account_id."_retweeted_by_me", self::PATH_RETWEETED_BY_ME, true, "status");
+  }
+  
+  /**
+  * Returns Twitter Retweets to the authenticated user
+  *
+  * @see _getData
+  * @return string Returns parsed data from Twitter API ready for display in templates
+  */
+  function retweeted_to_me() 
+  {
+    return $this->_getData($this->account_id."_retweeted_to_me", self::PATH_RETWEETED_TO_ME, true, "status");
+  }
+  
+  /**
+  * Returns Twitter Retweets of the authenticated user
+  *
+  * @see _getData
+  * @return string Returns parsed data from Twitter API ready for display in templates
+  */
+  function retweets_of_me() 
+  {
+    return $this->_getData($this->account_id."_retweets_of_me", self::PATH_RETWEETS_OF_ME, true, "status");
+  }
 	
 	/**
 	* Returns Twitter Friends for the authenticated user
@@ -337,6 +337,8 @@ class Twitee{
 	*/	
 	protected function _getData($filename, $path, $auth, $parser)
 	{
+	  global $REGX;
+	  
 		if (!$this->_checkCache($filename))
 		{
 			$cache_file = PATH_CACHE . $this->cache_folder . $filename .'.'. $this->format;
@@ -560,11 +562,11 @@ class Twitee{
 	*/	
 	protected function _parse_status($xml)
 	{
-		global $TMPL;
+		global $TMPL, $REGX;
 		$count = 0;
 		foreach ($xml->status as $status)
 		{
-			$status->text = $this->twitterStatusUrlConverter($status->text);
+			$status->text = $REGX->xss_clean($this->twitterStatusUrlConverter($status->text));
 			
 			if($count == $this->limit)
 			{
@@ -579,12 +581,12 @@ class Twitee{
 			{
 				if (isset($status->$val))
 				{
-					$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
+					$tagdata = $TMPL->swap_var_single($val, $REGX->xss_clean($status->$val), $tagdata);
 				}
 				/* Added by Leevi Graham (http://leevigraham.com), Technical Director - Newism (http://newism.com.au) */
 				elseif($val == "relative_time")
 				{
-					$relative_time = $this->_relativeTime(strtotime($status->created_at));
+					$relative_time = $this->_relativeTime(strtotime($REGX->xss_clean($status->created_at)));
 					if($TMPL->fetch_param("ucfirst_relative_time") == "y")
 					{
 						$relative_time = ucfirst($relative_time);
@@ -599,7 +601,7 @@ class Twitee{
 				{
 					if (isset($user->$val))
 					{
-						$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
+						$tagdata = $TMPL->swap_var_single($val, $REGX->xss_clean($user->$val), $tagdata);
 					}
 				}
 				
@@ -658,14 +660,14 @@ class Twitee{
 	*/
 	protected function _parse_basic_user($xml)
 	{
-		global $TMPL;
+		global $TMPL, $REGX;
 	
 		$count = 0;
 		
 		foreach ($xml->user as $user)		
 		{
 
-			$user->status->text = $this->twitterStatusUrlConverter($user->status->text);
+			$user->status->text = $REGX->xss_clean($this->twitterStatusUrlConverter($user->status->text));
 			
 			if($count == $this->limit)
 			{
@@ -682,7 +684,7 @@ class Twitee{
 				
 				if (isset($user->$val))
 				{
-				$tagdata = $TMPL->swap_var_single($val, $user->$val, $tagdata);
+				$tagdata = $TMPL->swap_var_single($val, $REGX->xss_clean($user->$val), $tagdata);
 				}
 			}
 				
@@ -695,7 +697,7 @@ class Twitee{
 					
 					if (isset($status->$val))
 					{
-					$tagdata = $TMPL->swap_var_single($val, $status->$val, $tagdata);
+					$tagdata = $TMPL->swap_var_single($val, $REGX->xss_clean($status->$val), $tagdata);
 					
 					}
 				}
