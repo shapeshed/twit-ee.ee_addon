@@ -78,10 +78,31 @@ Returns the 20 most recent mentions (status containing @username) for the authen
 	
 	{exp:twitee:mentions}
 	{/exp:twitee:mentions}
+	
+#### Retweeted by me ####
+
+Returns the 20 most recent retweets posted by the authenticating user.
+
+	{exp:twitee:retweeted_by_me}
+	{/exp:twitee:retweeted_by_me}
+	
+#### Retweeted to me ####
+
+Returns the 20 most recent retweets posted by the authenticating user's friends.
+
+	{exp:twitee:retweeted_to_me}
+	{/exp:twitee:retweeted_to_me}
+	
+#### Retweets of me ####
+
+Returns the 20 most recent retweets posted by the authenticating user's friends.
+
+	{exp:twitee:retweets_of_me}
+	{/exp:twitee:retweets_of_me}
 
 #### Favorites ####
 
-Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format. 
+Returns the 20 most recent tweets of the authenticated user that have been retweeted by others.
 	
 	{exp:twitee:favorites}
 	{/exp:twitee:favorites}
